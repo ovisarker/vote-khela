@@ -61,7 +61,7 @@
       top: 15px;
       left: 15px;
       z-index: 65;
-      pointer-events: none; /* টাচ ব্লক করবে না */
+      pointer-events: none;
       transform-origin: top left;
       animation: boatFloat 2.5s ease-in-out infinite;
       filter: drop-shadow(0 8px 12px rgba(0,0,0,0.3));
@@ -87,7 +87,7 @@
     #slogan {
       position: absolute;
       top: 18px;
-      left: clamp(70px, 16vw, 120px); /* বোটের জন্য জায়গা ছাড়া হয়েছে */
+      left: clamp(70px, 16vw, 120px);
       z-index: 30;
       color: #FFD700;
       font-weight: 800;
@@ -233,9 +233,9 @@
 
   <div id="game-container">
     <div id="slogan">
-      Satire Mode 😄
-      Greeting Poster এ টাচ নয়,
-      Box এ ট্যাপ = GOAL!
+      জয় বাংলা, জয় বঙ্গবন্ধু...<br>
+      শেখ হাসিনার সালাম নিন,<br>
+      ব্যালট বক্সে লাথি দিন!
     </div>
 
     <div id="ui">
@@ -275,13 +275,13 @@
   </div>
 
   <script>
-    // --- ফাইলের নাম (Clean Variable Name: boatSrc) ---
+    // --- ফাইলের নাম (Updated) ---
     const keeperDefaultSrc = "defense.png";
-    const keeperLaughSrc   = "Gemini_Generated_Image_t3goelt3goelt3go.png";
-    const keeperCrySrc     = "Gemini_Generated_Image_gzxxk1gzxxk1gzxx.png";
+    const keeperLaughSrc   = "laugh.png"; // ✅ Renamed
+    const keeperCrySrc     = "cry.png";   // ✅ Renamed
     const salamSrc         = "Gemini_Generated_Image_95l72b95l72b95l7.png";
     const boxSrc           = "box.png";
-    const boatSrc          = "boat.png"; // ✅ Renamed variable
+    const boatSrc          = "boat.png"; 
     const introSrc         = "intro.jpg";
 
     // --- এলিমেন্ট ---
@@ -316,7 +316,7 @@
       muteBtn.textContent = music.muted ? "🔇" : "🔊";
     });
 
-    // --- Preloader (Updated assets list) ---
+    // --- Preloader ---
     const assets = [
       introSrc,
       keeperDefaultSrc, keeperLaughSrc, keeperCrySrc,

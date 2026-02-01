@@ -11,7 +11,7 @@
         /* স্কোরবোর্ড */
         #ui-layer { position: absolute; top: 10px; left: 10px; color: yellow; z-index: 10; font-size: 20px; font-weight: bold; pointer-events: none; text-shadow: 2px 2px #000; }
         
-        /* ছবি এবং বক্সের স্টাইল */
+        /* গেম অবজেক্ট (ইমোজি) */
         .game-object {
             position: absolute;
             width: 80px;
@@ -19,15 +19,10 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            font-size: 60px; /* ইমোজির সাইজ */
             cursor: pointer;
             user-select: none;
             transition: transform 0.1s;
-        }
-
-        .game-object img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
             filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5));
         }
 
@@ -41,6 +36,7 @@
             animation: popUp 0.5s forwards;
             text-shadow: 2px 2px red;
             z-index: 15;
+            white-space: nowrap;
         }
 
         @keyframes popUp {
@@ -48,7 +44,7 @@
             100% { transform: scale(1.5) translateY(-50px); opacity: 0; }
         }
 
-        /* মেনু এবং গেম ওভার স্ক্রিন */
+        /* স্টার্ট এবং গেম ওভার স্ক্রিন */
         .overlay {
             position: absolute;
             top: 50%; left: 50%;
@@ -69,10 +65,6 @@
 </head>
 <body>
 
-<audio id="bg-music" loop>
-    <source src="music.mp3" type="audio/mpeg">
-</audio>
-
 <div id="game-container">
     <div id="ui-layer">
         Points: <span id="score">0</span> <br>
@@ -82,8 +74,8 @@
     <div id="start-screen" class="overlay">
         <h2 style="color: #2c3e50;">সালাম নিন,<br>বক্সে লাথি দিন! 🦵</h2>
         <p>🗳️ <b>ব্যালট বক্স:</b> দেখলেই লাথি (ক্লিক) দিন।</p>
-        <p>👩‍💼 <b>সালাম:</b> সালাম দিলে <span style="color:red">লাথি মারবেন না!</span> (ইগনোর করুন)</p>
-        <button onclick="startGame()">খেলা শুরু 🎵</button>
+        <p>🙋‍♀️ <b>সালাম:</b> সালাম দিলে <span style="color:red">লাথি মারবেন না!</span> (ইগনোর করুন)</p>
+        <button onclick="startGame()">খেলা শুরু</button>
     </div>
     
     <div id="game-over" class="overlay hidden">
@@ -100,7 +92,6 @@
     const lifeEl = document.getElementById('life');
     const gameOverScreen = document.getElementById('game-over');
     const startScreen = document.getElementById('start-screen');
-    const bgMusic = document.getElementById('bg-music');
 
     let score = 0;
     let lives = 3;
@@ -109,8 +100,6 @@
     function startGame() {
         startScreen.classList.add('hidden');
         gameActive = true;
-        bgMusic.volume = 0.5; 
-        bgMusic.play().catch(e => console.log("Audio requires interaction"));
         spawnObject();
     }
 
@@ -120,17 +109,13 @@
         const obj = document.createElement('div');
         obj.classList.add('game-object');
         
-        // ৩০% চান্স সালাম আসার, ৭০% চান্স বক্স আসার
+        // ৩০% চান্স সালাম আসার (ইমোজি)
         let isSalam = Math.random() < 0.3; 
 
         if (isSalam) {
-            // সালাম ইমেজ
-            obj.innerHTML = '<img src="salam.png" alt="Salam">';
-            obj.setAttribute('data-type', 'salam');
+            obj.innerText = "🙋‍♀️"; // সালাম ইমোজি
         } else {
-            // বক্স ইমেজ
-            obj.innerHTML = '<img src="box.png" alt="Box">';
-            obj.setAttribute('data-type', 'box');
+            obj.innerText = "🗳️"; // বক্স ইমোজি
         }
 
         // পজিশন সেট করা
@@ -138,9 +123,9 @@
         obj.style.left = xPos + 'px';
         obj.style.top = '-80px';
 
-        // ক্লিক ইভেন্ট (কম্পিউটার ও মোবাইল)
-        obj.addEventListener('mousedown', () => handleClick(obj, isSalam));
-        obj.addEventListener('touchstart', (e) => { e.preventDefault(); handleClick(obj, isSalam); });
+        // ক্লিক ইভেন্ট
+        obj.onmousedown = () => handleClick(obj, isSalam);
+        obj.ontouchstart = (e) => { e.preventDefault(); handleClick(obj, isSalam); };
 
         container.appendChild(obj);
 
@@ -210,7 +195,6 @@
 
     function endGame(msg) {
         gameActive = false;
-        bgMusic.pause();
         document.getElementById('final-score').innerText = score;
         document.getElementById('game-over-msg').innerHTML = msg;
         gameOverScreen.classList.remove('hidden');

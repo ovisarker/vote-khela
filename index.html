@@ -55,13 +55,13 @@
     }
     @keyframes pulseBtn { 0%,100%{transform:scale(1);} 50%{transform:scale(1.05);} }
 
-    /* --- ✅ NEW: Animated boat.png (Top-Left, No Cross) --- */
+    /* --- ✅ Animated Boat (Top-Left Fixed) --- */
     #boat-top-left {
       position: fixed;
       top: 15px;
       left: 15px;
       z-index: 65;
-      pointer-events: none; /* গেমের টাচ আটকাবে না */
+      pointer-events: none; /* টাচ ব্লক করবে না */
       transform-origin: top left;
       animation: boatFloat 2.5s ease-in-out infinite;
       filter: drop-shadow(0 8px 12px rgba(0,0,0,0.3));
@@ -70,7 +70,7 @@
       width: clamp(50px, 12vw, 90px);
       height: auto;
       display: block;
-      border-radius: 10px; /* হালকা রাউন্ডেড কর্নার */
+      border-radius: 10px;
       animation: boatWiggle 3.5s ease-in-out infinite;
     }
     @keyframes boatFloat {
@@ -87,7 +87,7 @@
     #slogan {
       position: absolute;
       top: 18px;
-      left: clamp(70px, 15vw, 120px); /* বোটের জন্য জায়গা ছাড়া হয়েছে */
+      left: clamp(70px, 16vw, 120px); /* বোটের জন্য জায়গা ছাড়া হয়েছে */
       z-index: 30;
       color: #FFD700;
       font-weight: 800;
@@ -104,9 +104,9 @@
       white-space: pre-line;
     }
 
-    /* --- UI (Top Right/Center) --- */
+    /* --- UI (Top Right) --- */
     #ui {
-      position: absolute; top: 10px; right: 10px; /* ডানদিকে সরানো হয়েছে */
+      position: absolute; top: 10px; right: 10px;
       z-index: 35; display: flex; align-items: center; gap: 10px;
       color: #fff; font-size: clamp(13px, 3vw, 18px); font-weight: 800;
       background: #e63946; padding: 6px 15px; border-radius: 20px;
@@ -275,13 +275,13 @@
   </div>
 
   <script>
-    // --- ফাইলের নাম ---
+    // --- ফাইলের নাম (Clean Variable Name: boatSrc) ---
     const keeperDefaultSrc = "defense.png";
     const keeperLaughSrc   = "Gemini_Generated_Image_t3goelt3goelt3go.png";
     const keeperCrySrc     = "Gemini_Generated_Image_gzxxk1gzxxk1gzxx.png";
     const salamSrc         = "Gemini_Generated_Image_95l72b95l72b95l7.png";
     const boxSrc           = "box.png";
-    const badgeSrc         = "boat.png"; // New Boat Image
+    const boatSrc          = "boat.png"; // ✅ Renamed variable
     const introSrc         = "intro.jpg";
 
     // --- এলিমেন্ট ---
@@ -316,11 +316,11 @@
       muteBtn.textContent = music.muted ? "🔇" : "🔊";
     });
 
-    // --- Preloader ---
+    // --- Preloader (Updated assets list) ---
     const assets = [
       introSrc,
       keeperDefaultSrc, keeperLaughSrc, keeperCrySrc,
-      salamSrc, boxSrc, badgeSrc
+      salamSrc, boxSrc, boatSrc
     ];
 
     function setLoaderText(text) {
@@ -402,7 +402,7 @@
 
     function handleInput(e) {
       if (!state.active || state.isKicking) return;
-      if (e.target && e.target.id === "muteBtn") return; // Boat is non-clickable now
+      if (e.target && e.target.id === "muteBtn") return; 
 
       const x = (typeof e.clientX === "number") ? e.clientX : window.innerWidth / 2;
       const aim = x < (window.innerWidth / 2) ? "left" : "right";

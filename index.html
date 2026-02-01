@@ -9,9 +9,7 @@
     /* --- বেসিক সেটআপ --- */
     body {
       margin: 0; overflow: hidden; background: #000;
-      font-family: "Segoe UI", 'Arial', sans-serif;
-      touch-action: none; user-select: none;
-      -webkit-tap-highlight-color: transparent;
+      font-family: "Segoe UI", sans-serif; touch-action: none; user-select: none;
     }
 
     #game-container {
@@ -20,7 +18,7 @@
       overflow: hidden; will-change: transform;
     }
 
-    /* --- লোডার --- */
+    /* --- লোডিং স্ক্রিন --- */
     #loader {
       position: fixed; inset: 0; background: #111; z-index: 200;
       display: flex; flex-direction: column; justify-content: center; align-items: center;
@@ -31,6 +29,7 @@
       border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px;
     }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    #loading-text { opacity: 0.95; }
 
     /* --- ইন্ট্রো স্ক্রিন --- */
     #intro-layer {
@@ -41,116 +40,123 @@
       opacity: 1; transition: opacity 0.5s ease;
     }
     #intro-layer img {
-      max-width: 85%; max-height: 60vh;
+      max-width: 90%; max-height: 70vh;
       border: 3px solid #fff; border-radius: 10px;
+      box-shadow: 0 0 20px rgba(255,255,255,0.2);
       margin-bottom: 20px;
     }
     #intro-btn {
-      padding: 12px 40px; font-size: 18px; border: none; border-radius: 50px;
+      padding: 12px 35px; font-size: 20px; border: none; border-radius: 50px;
       background: #2ecc71; color: white; font-weight: 900; cursor: pointer;
       box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
       animation: pulseBtn 1.5s infinite;
     }
     @keyframes pulseBtn { 0%,100%{transform:scale(1);} 50%{transform:scale(1.05);} }
 
-    /* --- ১. মেইন স্লোগান (বামে) --- */
-    #slogan-left {
-      position: absolute; top: 15px; left: 15px; z-index: 30;
+    /* --- ১. স্লোগান (Top-Left) --- */
+    #slogan {
+      position: absolute;
+      top: 15px; left: 15px;
+      z-index: 30;
       color: #FFD700; font-weight: 800;
-      font-size: clamp(10px, 3vw, 16px); /* মোবাইলে ছোট হবে */
-      text-shadow: 1px 1px 2px #000; text-align: left;
-      background: rgba(0, 0, 0, 0.6); padding: 8px 12px; border-radius: 8px;
-      border-left: 3px solid #FFD700;
-      pointer-events: none; line-height: 1.4;
-      max-width: 40vw; /* মোবাইলে জায়গা বাঁচাবে */
+      font-size: clamp(12px, 3vw, 18px);
+      text-shadow: 1px 1px 2px #000;
+      text-align: left;
+      background: rgba(0, 0, 0, 0.65);
+      padding: 8px 15px; border-radius: 8px;
+      border-left: 4px solid #FFD700;
+      pointer-events: none;
+      line-height: 1.5;
+      max-width: 45vw;
+      white-space: pre-line;
     }
 
-    /* --- ২. বোট গ্রুপ (ডানে উপরে + নতুন স্লোগান) --- */
-    #boat-group-right {
-      position: fixed; top: 10px; right: 10px; z-index: 60;
-      display: flex; flex-direction: column; align-items: center;
-      pointer-events: none; transform-origin: top right;
-      animation: floatGroup 3s ease-in-out infinite;
+    /* --- ২. বোট ইমেজ (Top-Right) --- */
+    #boat-corner {
+      position: fixed;
+      top: 15px; right: 15px;
+      z-index: 65; pointer-events: none;
+      transform-origin: top right;
+      animation: boatFloat 2.5s ease-in-out infinite;
+      filter: drop-shadow(0 8px 12px rgba(0,0,0,0.3));
     }
-    /* বোটের ছবি বড় করা হয়েছে */
-    #boat-group-right img {
-      width: clamp(70px, 20vw, 130px); /* মোবাইলেও বড় দেখাবে */
+    #boat-corner img {
+      width: clamp(70px, 18vw, 120px);
       height: auto; display: block;
-      filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
-      animation: boatRock 3s ease-in-out infinite;
+      border-radius: 10px;
+      animation: boatWiggle 3.5s ease-in-out infinite;
     }
-    /* নতুন স্লোগান বক্স */
-    .mini-slogan-box {
-      margin-top: -5px;
-      background: #d63031; color: white;
-      font-weight: 900; font-size: clamp(9px, 2.5vw, 13px);
-      padding: 3px 8px; border-radius: 10px;
-      border: 1px solid white;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.4);
-      text-align: center; white-space: nowrap;
-      z-index: 61;
-    }
+    @keyframes boatFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
+    @keyframes boatWiggle { 0%,100% { transform: rotate(0deg); } 33% { transform: rotate(-3deg); } 66% { transform: rotate(3deg); } }
 
-    @keyframes floatGroup { 0%,100%{transform:translateY(0);} 50%{transform:translateY(5px);} }
-    @keyframes boatRock { 0%,100%{transform:rotate(0deg);} 25%{transform:rotate(-3deg);} 75%{transform:rotate(3deg);} }
-
-    /* --- ৩. স্কোরবোর্ড (মাঝখানে) --- */
+    /* --- ৩. স্কোরবোর্ড (Top-Center) --- */
     #ui {
-      position: absolute; top: 15px; left: 50%; transform: translateX(-50%);
-      z-index: 35; display: flex; align-items: center; gap: 8px;
-      color: #fff; font-size: clamp(12px, 3.5vw, 18px); font-weight: 800;
-      background: #e63946; padding: 5px 15px; border-radius: 20px;
-      border: 2px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      position: absolute;
+      top: 15px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 40;
+      display: flex; align-items: center; gap: 10px;
+      color: #fff; font-size: clamp(14px, 3.5vw, 20px); font-weight: 800;
+      background: #e63946; padding: 8px 20px; border-radius: 30px;
+      border: 3px solid white;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
       white-space: nowrap;
     }
+    #ui .pill { display: inline-flex; align-items: center; gap: 6px; }
     #muteBtn {
-      border: none; border-radius: 50%; width: 25px; height: 25px;
-      cursor: pointer; font-weight: bold; background: rgba(0,0,0,0.3); color: #fff;
-      display: flex; align-items: center; justify-content: center; font-size: 12px;
+      border: none; border-radius: 50%; width: 30px; height: 30px;
+      cursor: pointer; font-weight: 900; font-size: 14px;
+      background: rgba(0,0,0,0.25); color: #fff;
+      display: flex; align-items: center; justify-content: center;
     }
 
-    /* --- গেম অবজেক্টস (মোবাইল অপটিমাইজড) --- */
+    /* --- গেম অবজেক্টস --- */
     #goal-post {
       position: absolute; top: 22%; left: 50%; transform: translateX(-50%);
-      font-size: clamp(180px, 50vw, 400px); /* মোবাইলে ফিট হবে */
-      z-index: 2; pointer-events: none;
+      font-size: clamp(220px, 55vw, 450px); z-index: 2; pointer-events: none;
       filter: drop-shadow(0 10px 10px rgba(0,0,0,0.3)); line-height: 0;
     }
 
     #keeper-container {
-      position: absolute; top: 39%; left: 50%; transform: translateX(-50%);
-      width: clamp(90px, 22vw, 180px); /* কিপারের সাইজ ঠিক করা */
-      z-index: 5; pointer-events: none; transition: transform 0.2s ease-out;
+      position: absolute; top: 40%; left: 50%; transform: translateX(-50%);
+      width: clamp(110px, 24vw, 190px); z-index: 5; pointer-events: none;
+      transition: transform 0.2s ease-out;
     }
     #keeper-container img { width: 100%; height: auto; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5)); }
     .keeper-laugh { animation: shake 0.5s infinite; }
     .keeper-cry { animation: bounce 0.4s infinite alternate; }
 
-    /* --- ৪. সালাম ইমেজ (Half Cut Fix) --- */
+    /* --- ✅ ৪. সালাম ইমেজ (FIXED: Upper Middle/Left) --- */
     #salam-char {
-      position: absolute; bottom: 0; left: -2%;
-      width: clamp(200px, 45vw, 500px); /* স্ক্রিনের বাইরে যাবে না */
-      z-index: 10; pointer-events: none;
-      max-height: 50vh; /* মোবাইলে বেশি লম্বা হবে না */
+      position: absolute;
+      top: 30%; /* উপর থেকে ৩০% নিচে (Upper Middle এরিয়া) */
+      left: 2%; /* একদম বামে নয়, একটু ভেতরে */
+      width: clamp(180px, 35vw, 400px); /* সাইজ অপটিমাইজড */
+      z-index: 10;
+      pointer-events: none;
     }
-    #salam-char img { width: 100%; height: auto; filter: drop-shadow(5px 5px 15px rgba(0,0,0,0.5)); }
+    #salam-char img {
+      width: 100%; height: auto;
+      filter: drop-shadow(5px 5px 20px rgba(0,0,0,0.6));
+      display: block;
+    }
     .salam-happy { animation: bounceBig 0.6s infinite alternate; }
     @keyframes bounceBig { from { transform: translateY(0); } to { transform: translateY(-20px); } }
 
     /* --- বল --- */
     #ball-container {
-      position: absolute; bottom: 10%; left: 50%;
+      position: absolute; bottom: 8%; left: 50%;
       transform: translateX(-50%) rotate(-2deg);
       display: flex; align-items: center; z-index: 20;
       transition: left 0.18s ease; will-change: left, transform, opacity;
     }
-    #ball { width: clamp(100px, 22vw, 200px); cursor: pointer; }
-    #ball img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 8px 15px rgba(0,0,0,0.5)); }
-    #static-foot { font-size: clamp(30px, 5vw, 50px); margin-left: 5px; opacity: 0.8; filter: grayscale(0.5); pointer-events: none; }
+    #ball { width: clamp(130px, 25vw, 220px); cursor: pointer; }
+    #ball img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.6)); }
+    #static-foot { font-size: clamp(40px, 6vw, 60px); margin-left: 5px; opacity: 0.8; filter: grayscale(0.5); pointer-events: none; }
 
-    .line { position: absolute; bottom: 28%; left: 0; width: 100%; height: 2vh; background: #fff; opacity: 0.6; }
+    .line { position: absolute; bottom: 30%; left: 0; width: 100%; height: 2vh; background: #fff; opacity: 0.6; }
 
-    /* কিক এনিমেশন */
+    /* অ্যানিমেশন */
     .ball-goal { animation: shootGoal 0.8s forwards cubic-bezier(0.2, 0.8, 0.2, 1); }
     @keyframes shootGoal {
       0% { transform: translateX(-50%) rotate(-2deg) scale(1); }
@@ -163,18 +169,18 @@
     }
 
     #leg {
-      position: absolute; bottom: -15vh; right: -5vw;
-      font-size: clamp(120px, 30vw, 250px); z-index: 25; pointer-events: none;
+      position: absolute; bottom: -20vh; right: -5vw;
+      font-size: clamp(150px, 35vw, 280px); z-index: 25; pointer-events: none;
       transition: transform 0.1s ease-out; transform-origin: bottom right;
     }
-    .leg-kick { transform: rotate(-45deg) translate(-50px, -80px) !important; }
+    .leg-kick { transform: rotate(-45deg) translate(-60px, -100px) !important; }
 
     #msg {
       position: absolute; top: 50%; left: 50%;
       transform: translate(-50%, -50%) scale(0);
-      font-size: clamp(40px, 12vw, 90px); font-weight: 900;
+      font-size: clamp(56px, 14vw, 100px); font-weight: 900;
       z-index: 50; pointer-events: none; opacity: 0;
-      text-shadow: 2px 2px 0 #000; white-space: nowrap;
+      text-shadow: 3px 3px 0 #000; white-space: nowrap;
     }
     .msg-goal { color: #FFD700; }
     .msg-miss { color: #ff4757; }
@@ -190,13 +196,13 @@
       position: absolute; inset: 0; background: rgba(0,0,0,0.85);
       display: none;
       flex-direction: column; justify-content: center; align-items: center;
-      z-index: 100; text-align: center; padding: 15px;
+      z-index: 100; text-align: center; padding: 18px;
     }
-    #overlay h1 { color: #fff; font-size: clamp(20px, 6vw, 40px); margin-bottom: 15px; }
+    #overlay h1 { color: #fff; font-size: clamp(24px, 6vw, 40px); margin-bottom: 16px; }
     #final-score { display: none; color: #FFD700; font-size: 18px; margin-bottom: 14px; }
-    #overlay .hint { color: #d1d5db; font-size: 11px; margin-top: 14px; opacity: 0.8; }
+    #overlay .hint { color: #d1d5db; font-size: 12px; margin-top: 14px; opacity: 0.8; }
     button {
-      padding: 12px 35px; font-size: 18px; border: none; border-radius: 50px;
+      padding: 15px 40px; font-size: 20px; border: none; border-radius: 50px;
       background: linear-gradient(45deg, #FF416C, #FF4B2B); color: #fff;
       font-weight: 900; cursor: pointer; box-shadow: 0 5px 15px rgba(255, 75, 43, 0.5);
     }
@@ -204,20 +210,13 @@
 
     @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
     @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-15px); } }
-
-    /* --- মোবাইল ফিক্স (Media Queries) --- */
-    @media (max-height: 600px) {
-      #salam-char { width: 180px; }
-      #goal-post { font-size: 150px; top: 15%; }
-      #keeper-container { width: 80px; top: 35%; }
-    }
   </style>
 </head>
 
 <body>
   <div id="loader">
     <div class="spinner"></div>
-    <div id="loading-text">লোড হচ্ছে...</div>
+    <div id="loading-text">ছবি লোড হচ্ছে...</div>
   </div>
 
   <div id="intro-layer">
@@ -229,13 +228,12 @@
     <source src="FBDownloader.to-4256735371281819-(320kbps).mp3" type="audio/mpeg">
   </audio>
 
-  <div id="boat-group-right" aria-hidden="true">
+  <div id="boat-corner" aria-hidden="true">
     <img src="boat.png" alt="Boat">
-    <div class="mini-slogan-box">নৌকা ছাড়া কিসের ভোট?</div>
   </div>
 
   <div id="game-container">
-    <div id="slogan-left">
+    <div id="slogan">
       জয় বাংলা, জয় বঙ্গবন্ধু...<br>
       শেখ হাসিনার সালাম নিন,<br>
       ব্যালট বক্সে লাথি দিন!
@@ -243,8 +241,8 @@
 
     <div id="ui">
       <div class="pill">GOALS: <span id="score">0</span></div>
-      <div class="pill" style="border-left:1px solid #fff; padding-left:8px;">LIFE: <span id="life">⚽⚽⚽⚽⚽</span></div>
-      <button id="muteBtn">🔊</button>
+      <div class="pill" style="border-left:2px solid rgba(255,255,255,0.3); padding-left:8px;">LIFE: <span id="life">⚽⚽⚽⚽⚽</span></div>
+      <button id="muteBtn" title="Mute/Unmute">🔊</button>
     </div>
 
     <div id="goal-post">🥅</div>
@@ -256,7 +254,7 @@
     <div class="line"></div>
 
     <div id="salam-char">
-      <img src="salam.png" alt="Character">
+      <img src="salam.png" alt="Salam Character">
     </div>
 
     <div id="ball-container">
@@ -273,16 +271,16 @@
       <h1 id="overlay-title">VOTE KHELA PRO</h1>
       <div id="final-score">Final Score: 0</div>
       <button id="startBtn" disabled>ম্যাচ শুরু ▶</button>
-      <div class="hint">বামে বা ডানে ট্যাপ করে শট নিন</div>
+      <div class="hint">টিপ: বামে ক্লিক = বামে শট, ডানে ক্লিক = ডানে শট।</div>
     </div>
   </div>
 
   <script>
-    // --- ফাইল ---
+    // --- ফাইলের নাম ---
     const keeperDefaultSrc = "defense.png";
-    const keeperLaughSrc   = "laugh.png";
+    const keeperLaughSrc   = "laugh.png"; 
     const keeperCrySrc     = "cry.png";
-    const salamSrc         = "salam.png";
+    const salamSrc         = "salam.png"; 
     const boxSrc           = "box.png";
     const boatSrc          = "boat.png";
     const introSrc         = "intro.jpg";
@@ -306,7 +304,6 @@
     const startBtn      = document.getElementById("startBtn");
     const muteBtn       = document.getElementById("muteBtn");
 
-    // ✅ ৫টি লাইফ দিয়ে শুরু
     const state = { score: 0, lives: 5, isKicking: false, active: false };
     let assetsReady = false;
 
@@ -341,6 +338,8 @@
       loader.style.opacity = "0";
       setTimeout(() => { loader.style.display = "none"; }, 500);
       introLayer.style.display = "flex";
+      introLayer.style.opacity = "1";
+      introLayer.style.pointerEvents = "auto";
       startBtn.disabled = false;
     }
     window.addEventListener("load", boot);
@@ -357,7 +356,6 @@
 
     function updateUI() {
       scoreEl.textContent = String(state.score);
-      // ✅ ৫টি লাইফ বল আইকন
       lifeEl.textContent = "⚽".repeat(Math.max(0, state.lives));
     }
 
@@ -368,7 +366,7 @@
       overlay.style.display = "none";
 
       state.score = 0;
-      state.lives = 5; // ✅ Reset to 5
+      state.lives = 5;
       state.isKicking = false;
       state.active = true;
       updateUI();
@@ -395,7 +393,6 @@
       state.isKicking = true;
       const keeperDive = Math.random() < 0.5 ? "left" : "right";
       
-      // Difficulty
       const level = Math.min(10, Math.floor(state.score / 3));
       let goalChance = (aim !== keeperDive) ? (0.90 - level * 0.03) : (0.30 - level * 0.01);
       const isGoal = Math.random() < Math.max(0.15, Math.min(0.92, goalChance));
@@ -413,7 +410,7 @@
         if (isGoal) {
           ballAnim.classList.add("ball-goal");
           msg.textContent = "GOAL!";
-          msg.className = "msg-goal show-msg"; // Reset class fix
+          msg.className = "msg-goal show-msg";
           setTimeout(() => {
             state.score++; updateUI();
             salam.classList.add("salam-happy");
@@ -426,7 +423,7 @@
           
           const isSaved = (aim === keeperDive);
           msg.textContent = isSaved ? "SAVED!" : "MISS!";
-          msg.className = "msg-miss show-msg"; // Reset class fix
+          msg.className = "msg-miss show-msg";
           
           state.lives--; updateUI();
           setTimeout(() => {
@@ -445,7 +442,7 @@
     function resetRound(hardReset) {
       ballAnim.classList.remove("ball-goal", "ball-miss");
       ballAnim.style.left = "50%";
-      msg.className = ""; // clear msg classes
+      msg.className = "";
       salam.classList.remove("salam-happy");
       keeperCont.classList.remove("keeper-laugh", "keeper-cry");
       keeperCont.style.transform = "translateX(-50%)";

@@ -16,7 +16,7 @@
 
     #game-container {
       position: relative; width: 100vw; height: 100vh;
-      background: linear-gradient(to bottom, #87CEEB 0%, #E0F7FA 30%, #4CAF50 30%, #2E7D32 100%);
+      background: linear-gradient(to bottom, #87CEEB 0%, #E0F7FA 35%, #4CAF50 35%, #2E7D32 100%);
       overflow: hidden; will-change: transform;
     }
 
@@ -53,27 +53,27 @@
     }
     @keyframes pulseBtn { 0%,100%{transform:scale(1);} 50%{transform:scale(1.05);} }
 
-    /* --- ১. মেইন স্লোগান (বামে) --- */
+    /* --- ১. মেইন স্লোগান (বামে কোণায়) --- */
     #slogan-left {
-      position: absolute; top: 15px; left: 15px; z-index: 30;
+      position: absolute; top: 10px; left: 10px; z-index: 30;
       color: #FFD700; font-weight: 800;
-      font-size: clamp(11px, 3.5vw, 18px);
+      font-size: clamp(10px, 3.5vw, 16px);
       text-shadow: 1px 1px 2px #000; text-align: left;
-      background: rgba(0, 0, 0, 0.6); padding: 8px 12px; border-radius: 8px;
+      background: rgba(0, 0, 0, 0.6); padding: 6px 10px; border-radius: 8px;
       border-left: 3px solid #FFD700;
       pointer-events: none; line-height: 1.4;
-      max-width: 45vw;
+      max-width: 40vw;
     }
 
-    /* --- ২. বোট গ্রুপ (ডানে উপরে + নতুন স্লোগান) --- */
+    /* --- ২. বোট গ্রুপ (ডানে কোণায়) --- */
     #boat-group-right {
-      position: fixed; top: 15px; right: 15px; z-index: 60;
+      position: fixed; top: 10px; right: 10px; z-index: 60;
       display: flex; flex-direction: column; align-items: center;
       pointer-events: none; transform-origin: top right;
       animation: floatGroup 3s ease-in-out infinite;
     }
     #boat-group-right img {
-      width: clamp(70px, 22vw, 140px); /* বড় সাইজ */
+      width: clamp(65px, 18vw, 120px); /* মোবাইলে সাইজ ঠিক থাকবে */
       height: auto; display: block;
       filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
       animation: boatRock 3s ease-in-out infinite;
@@ -82,74 +82,75 @@
     .mini-slogan-box {
       margin-top: -5px;
       background: #d63031; color: white;
-      font-weight: 900; font-size: clamp(10px, 3vw, 14px);
-      padding: 4px 10px; border-radius: 12px;
-      border: 2px solid white;
+      font-weight: 900; font-size: clamp(8px, 2.5vw, 12px);
+      padding: 3px 8px; border-radius: 10px;
+      border: 1px solid white;
       box-shadow: 0 3px 6px rgba(0,0,0,0.4);
       text-align: center; white-space: nowrap;
       z-index: 61;
     }
 
-    @keyframes floatGroup { 0%,100%{transform:translateY(0);} 50%{transform:translateY(6px);} }
+    @keyframes floatGroup { 0%,100%{transform:translateY(0);} 50%{transform:translateY(5px);} }
     @keyframes boatRock { 0%,100%{transform:rotate(0deg);} 25%{transform:rotate(-3deg);} 75%{transform:rotate(3deg);} }
 
-    /* --- ৩. স্কোরবোর্ড (মাঝখানে) --- */
+    /* --- ৩. স্কোরবোর্ড (গোলপোস্টের উপরে মাঝখানে) --- */
     #ui {
-      position: absolute; top: 15px; left: 50%; transform: translateX(-50%);
+      position: absolute; 
+      top: 15%; /* গোলপোস্টের একটু উপরে */
+      left: 50%; transform: translateX(-50%);
       z-index: 35; display: flex; align-items: center; gap: 8px;
-      color: #fff; font-size: clamp(12px, 3.5vw, 18px); font-weight: 800;
-      background: #e63946; padding: 5px 15px; border-radius: 20px;
+      color: #fff; font-size: clamp(14px, 4vw, 20px); font-weight: 800;
+      background: #e63946; padding: 6px 15px; border-radius: 20px;
       border: 2px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);
       white-space: nowrap;
     }
     #muteBtn {
-      border: none; border-radius: 50%; width: 28px; height: 28px;
+      border: none; border-radius: 50%; width: 25px; height: 25px;
       cursor: pointer; font-weight: bold; background: rgba(0,0,0,0.3); color: #fff;
-      display: flex; align-items: center; justify-content: center; font-size: 14px;
+      display: flex; align-items: center; justify-content: center; font-size: 12px;
     }
 
-    /* --- গেম অবজেক্টস --- */
+    /* --- গেম অবজেক্টস (মোবাইল অপটিমাইজড) --- */
     #goal-post {
-      position: absolute; top: 22%; left: 50%; transform: translateX(-50%);
-      font-size: clamp(180px, 50vw, 400px);
+      position: absolute; top: 25%; left: 50%; transform: translateX(-50%);
+      font-size: clamp(200px, 60vw, 450px); /* মোবাইলে বড় দেখাবে */
       z-index: 2; pointer-events: none;
       filter: drop-shadow(0 10px 10px rgba(0,0,0,0.3)); line-height: 0;
     }
 
     #keeper-container {
-      position: absolute; top: 39%; left: 50%; transform: translateX(-50%);
-      width: clamp(90px, 22vw, 180px);
+      position: absolute; top: 42%; left: 50%; transform: translateX(-50%);
+      width: clamp(100px, 28vw, 200px); /* কিপারের সাইজ এডজাস্টেড */
       z-index: 5; pointer-events: none; transition: transform 0.2s ease-out;
     }
     #keeper-container img { width: 100%; height: auto; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5)); }
     .keeper-laugh { animation: shake 0.5s infinite; }
     .keeper-cry { animation: bounce 0.4s infinite alternate; }
 
-    /* --- ৪. সালাম ইমেজ (Upper Middle/Left Positioned) --- */
+    /* --- ৪. সালাম ইমেজ (Fixed & Optimized) --- */
     #salam-char {
-      position: absolute;
-      top: 30%; /* পজিশন ঠিক করা হয়েছে */
-      left: 2%; 
-      width: clamp(180px, 40vw, 450px);
+      position: absolute; 
+      bottom: 0; left: -5%; /* একদম নিচে বামে */
+      width: clamp(220px, 55vw, 550px); /* মোবাইলে সুন্দর দেখাবে, কাটবে না */
       z-index: 10; pointer-events: none;
+      filter: drop-shadow(5px 5px 15px rgba(0,0,0,0.5));
     }
-    #salam-char img { width: 100%; height: auto; filter: drop-shadow(5px 5px 15px rgba(0,0,0,0.5)); }
+    #salam-char img { width: 100%; height: auto; display: block; }
     .salam-happy { animation: bounceBig 0.6s infinite alternate; }
     @keyframes bounceBig { from { transform: translateY(0); } to { transform: translateY(-20px); } }
 
     /* --- বল --- */
     #ball-container {
-      position: absolute; bottom: 10%; left: 50%;
+      position: absolute; bottom: 12%; left: 50%;
       transform: translateX(-50%) rotate(-2deg);
       display: flex; align-items: center; z-index: 20;
       transition: left 0.18s ease; will-change: left, transform, opacity;
     }
-    #ball { width: clamp(100px, 25vw, 220px); cursor: pointer; }
+    #ball { width: clamp(110px, 25vw, 220px); cursor: pointer; }
     #ball img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 8px 15px rgba(0,0,0,0.5)); }
+    /* পা রিমুভ করা হয়েছে */
     
-    /* Static foot removed here */
-
-    .line { position: absolute; bottom: 28%; left: 0; width: 100%; height: 2vh; background: #fff; opacity: 0.6; }
+    .line { position: absolute; bottom: 30%; left: 0; width: 100%; height: 2vh; background: #fff; opacity: 0.6; }
 
     /* কিক এনিমেশন */
     .ball-goal { animation: shootGoal 0.8s forwards cubic-bezier(0.2, 0.8, 0.2, 1); }
@@ -162,8 +163,6 @@
       0% { transform: translateX(-50%) rotate(-2deg) scale(1); }
       100% { bottom: 65%; transform: translateX(-50%) rotate(-360deg) scale(0.3); opacity: 0; }
     }
-
-    /* Leg Animation Removed (হলুদ পা সরিয়ে দেওয়া হয়েছে) */
 
     #msg {
       position: absolute; top: 50%; left: 50%;
@@ -181,7 +180,7 @@
       100% { opacity: 0; transform: translate(-50%, -150px) scale(1.5); }
     }
 
-    /* ওভারলে */
+    /* মেনু ওভারলে */
     #overlay {
       position: absolute; inset: 0; background: rgba(0,0,0,0.85);
       display: none;
@@ -201,11 +200,12 @@
     @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
     @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-15px); } }
 
-    /* --- মোবাইল ফিক্স --- */
-    @media (max-height: 600px) {
-      #salam-char { width: 160px; top: 25%; }
-      #goal-post { font-size: 150px; top: 15%; }
-      #keeper-container { width: 80px; top: 35%; }
+    /* --- মোবাইল স্ক্রিন ফিক্স --- */
+    @media (max-height: 650px) {
+      #goal-post { top: 18%; }
+      #keeper-container { top: 36%; }
+      #ui { top: 10%; } /* ছোট স্ক্রিনে স্কোর একটু উপরে */
+      #salam-char { width: 45vw; }
     }
   </style>
 </head>
@@ -283,7 +283,6 @@
 
     const gameContainer = document.getElementById("game-container");
     const ballAnim      = document.getElementById("ball-container");
-    // const leg = removed
     const salam         = document.getElementById("salam-char");
     const keeperImg     = document.getElementById("keeper-img");
     const keeperCont    = document.getElementById("keeper-container");
@@ -300,6 +299,7 @@
     const startBtn      = document.getElementById("startBtn");
     const muteBtn       = document.getElementById("muteBtn");
 
+    // ✅ ৫ লাইফ সেট করা হয়েছে
     const state = { score: 0, lives: 5, isKicking: false, active: false };
     let assetsReady = false;
 
@@ -350,6 +350,7 @@
 
     function updateUI() {
       scoreEl.textContent = String(state.score);
+      // ✅ ৫টি বল আইকন দেখাবে
       lifeEl.textContent = "⚽".repeat(Math.max(0, state.lives));
     }
 
@@ -360,7 +361,7 @@
       overlay.style.display = "none";
 
       state.score = 0;
-      state.lives = 5;
+      state.lives = 5; // Reset to 5
       state.isKicking = false;
       state.active = true;
       updateUI();
@@ -391,7 +392,7 @@
       let goalChance = (aim !== keeperDive) ? (0.90 - level * 0.03) : (0.30 - level * 0.01);
       const isGoal = Math.random() < Math.max(0.15, Math.min(0.92, goalChance));
 
-      // No leg animation visual
+      // No Leg Animation
 
       setTimeout(() => {
         const moveX = keeperDive === "left" ? -50 : 50;
@@ -429,7 +430,7 @@
           if (state.lives <= 0) gameOver();
           else resetRound(false);
         }, 1800);
-      }, 100); // reduced delay slightly since leg removed
+      }, 100);
     }
 
     function resetRound(hardReset) {

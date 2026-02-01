@@ -136,12 +136,18 @@
     .keeper-laugh { animation: shake 0.5s infinite; }
     .keeper-cry { animation: bounce 0.4s infinite alternate; }
 
+    /* --- ✅ আপডেট: সালাম ইমেজ (Big Size + New Name) --- */
     #salam-char {
-      position: absolute; bottom: 15%; left: 2%;
-      width: clamp(150px, 30vw, 280px); z-index: 10;
+      position: absolute;
+      bottom: 5%;
+      left: -5%;
+      width: clamp(300px, 60vw, 600px); /* বিশাল সাইজ */
+      z-index: 10;
+      pointer-events: none;
     }
-    #salam-char img { width: 100%; height: auto; filter: drop-shadow(5px 5px 15px rgba(0,0,0,0.6)); }
-    .salam-happy { animation: bounce 0.6s infinite alternate; }
+    #salam-char img { width: 100%; height: auto; filter: drop-shadow(5px 5px 20px rgba(0,0,0,0.7)); }
+    .salam-happy { animation: bounceBig 0.6s infinite alternate; }
+    @keyframes bounceBig { from { transform: translateY(0); } to { transform: translateY(-25px); } }
 
     #ball-container {
       position: absolute; bottom: 8%; left: 50%;
@@ -253,7 +259,7 @@
     <div class="line"></div>
 
     <div id="salam-char">
-      <img src="Gemini_Generated_Image_95l72b95l72b95l7.png" alt="Greeting Character">
+      <img src="salam.png" alt="Salam Character">
     </div>
 
     <div id="ball-container">
@@ -275,13 +281,13 @@
   </div>
 
   <script>
-    // --- ফাইলের নাম (Updated) ---
+    // --- ফাইলের নাম (Updated Clean Names) ---
     const keeperDefaultSrc = "defense.png";
-    const keeperLaughSrc   = "laugh.png"; // ✅ Renamed
-    const keeperCrySrc     = "cry.png";   // ✅ Renamed
-    const salamSrc         = "Gemini_Generated_Image_95l72b95l72b95l7.png";
+    const keeperLaughSrc   = "laugh.png";
+    const keeperCrySrc     = "cry.png";
+    const salamSrc         = "salam.png"; // ✅ Renamed
     const boxSrc           = "box.png";
-    const boatSrc          = "boat.png"; 
+    const boatSrc          = "boat.png";
     const introSrc         = "intro.jpg";
 
     // --- এলিমেন্ট ---

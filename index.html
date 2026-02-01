@@ -56,25 +56,25 @@
     }
     @keyframes pulseBtn { 0%,100%{transform:scale(1);} 50%{transform:scale(1.05);} }
 
-    /* --- ১. বাম দিকের স্লোগান (Overlap Fix) --- */
+    /* --- ১. স্লোগান (বামে) --- */
     #slogan-left {
       position: absolute; top: 10px; left: 10px; z-index: 30;
       color: #FFD700; font-weight: 800;
-      font-size: clamp(9px, 3vw, 16px); /* ফন্ট সাইজ একটু কমানো হয়েছে */
+      font-size: clamp(9px, 3vw, 15px); /* ফন্ট সাইজ কমানো হয়েছে */
       text-shadow: 1px 1px 2px #000; text-align: left;
-      background: rgba(0, 0, 0, 0.6); padding: 5px 10px; border-radius: 8px;
+      background: rgba(0, 0, 0, 0.6); padding: 5px 8px; border-radius: 8px;
       border-left: 3px solid #FFD700;
-      pointer-events: none; line-height: 1.4;
-      max-width: 30vw; /* ✅ Width কমানো হয়েছে যাতে মাঝখানে না আসে */
+      pointer-events: none; line-height: 1.3;
+      max-width: 32vw; /* উইডথ লিমিট করা হয়েছে */
     }
 
-    /* --- ২. ডান দিকের স্লোগান (Overlap Fix) --- */
+    /* --- ২. বোট গ্রুপ (ডানে) --- */
     #boat-group-right {
       position: fixed; top: 10px; right: 10px; z-index: 60;
       display: flex; flex-direction: column; align-items: center;
       pointer-events: none; transform-origin: top right;
       animation: floatGroup 3s ease-in-out infinite;
-      max-width: 30vw; /* ✅ Width কমানো হয়েছে */
+      max-width: 32vw;
     }
     #boat-group-right img {
       width: clamp(50px, 18vw, 100px);
@@ -85,50 +85,51 @@
     .mini-slogan-box {
       margin-top: -5px;
       background: #d63031; color: white;
-      font-weight: 900; font-size: clamp(8px, 2.5vw, 12px);
-      padding: 3px 6px; border-radius: 8px;
+      font-weight: 900; font-size: clamp(8px, 2.5vw, 11px);
+      padding: 3px 5px; border-radius: 8px;
       border: 1px solid white;
       box-shadow: 0 3px 6px rgba(0,0,0,0.4);
       text-align: center; white-space: nowrap;
-      z-index: 61; line-height: 1.3;
+      z-index: 61; line-height: 1.2;
     }
     @keyframes floatGroup { 0%,100%{transform:translateY(0);} 50%{transform:translateY(5px);} }
     @keyframes boatRock { 0%,100%{transform:rotate(0deg);} 25%{transform:rotate(-3deg);} 75%{transform:rotate(3deg);} }
 
-    /* --- ৩. স্কোরবোর্ড (✅ নিচে নামানো হয়েছে) --- */
+    /* --- ৩. স্কোরবোর্ড (Safe Zone: অনেক নিচে নামানো হয়েছে) --- */
     #ui {
       position: absolute; 
-      top: 15%; /* ⚠️ আগে 10% ছিল, এখন 15% - ক্ল্যাশ ফিক্স */
+      top: 22%; /* ⚠️ আগে 15% ছিল, এখন 22% - যাতে স্লোগানের সাথে না লাগে */
       left: 50%; transform: translateX(-50%);
-      z-index: 35; display: flex; align-items: center; gap: 8px;
-      color: #fff; font-size: clamp(12px, 3.5vw, 20px); font-weight: 800;
-      background: #e63946; padding: 5px 12px; border-radius: 20px;
+      z-index: 35; display: flex; align-items: center; gap: 6px;
+      color: #fff; font-size: clamp(11px, 3.5vw, 18px); /* ফন্ট একটু ছোট করা হয়েছে */
+      font-weight: 800;
+      background: #e63946; padding: 4px 12px; border-radius: 20px;
       border: 2px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);
       white-space: nowrap;
     }
     #muteBtn {
-      border: none; border-radius: 50%; width: 25px; height: 25px;
+      border: none; border-radius: 50%; width: 24px; height: 24px;
       cursor: pointer; font-weight: bold; background: rgba(0,0,0,0.3); color: #fff;
-      display: flex; align-items: center; justify-content: center; font-size: 12px;
+      display: flex; align-items: center; justify-content: center; font-size: 11px;
     }
 
-    /* --- ৪. গোলপোস্ট (✅ নিচে নামানো হয়েছে) --- */
+    /* --- ৪. গোলপোস্ট (স্কোরবোর্ডের নিচে নামানো হয়েছে) --- */
     #goal-post {
       position: absolute; 
-      top: 28%; /* ⚠️ আগে 20% ছিল, এখন 28% */
+      top: 32%; /* ⚠️ আগে 28% ছিল, এখন 32% */
       left: 50%; transform: translateX(-50%);
-      font-size: clamp(160px, 55vw, 450px);
+      font-size: clamp(150px, 50vw, 420px); /* সাইজ একটু এডজাস্ট করা হয়েছে */
       z-index: 2; pointer-events: none;
       filter: grayscale(100%) brightness(300%) drop-shadow(0 10px 15px rgba(0,0,0,0.5));
       line-height: 0;
     }
 
-    /* --- ৫. গোলকিপার (✅ নিচে নামানো হয়েছে) --- */
+    /* --- ৫. গোলকিপার (গোলপোস্টের সাথে নামানো হয়েছে) --- */
     #keeper-container {
       position: absolute; 
-      top: 46%; /* ⚠️ আগে 38% ছিল, এখন 46% */
+      top: 50%; /* ⚠️ আগে 46% ছিল, এখন 50% */
       left: 50%; transform: translateX(-50%);
-      width: clamp(80px, 24vw, 190px);
+      width: clamp(75px, 22vw, 180px);
       z-index: 5; pointer-events: none; transition: transform 0.2s ease-out;
     }
     #keeper-container img { width: 100%; height: auto; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5)); }
@@ -139,7 +140,7 @@
     #salam-char {
       position: absolute; 
       bottom: 0; left: 0;
-      width: clamp(180px, 45vw, 550px);
+      width: clamp(170px, 42vw, 500px);
       z-index: 10; pointer-events: none;
       filter: drop-shadow(5px 5px 15px rgba(0,0,0,0.5));
     }
@@ -154,13 +155,13 @@
       display: flex; align-items: center; justify-content: center; z-index: 20;
       transition: left 0.18s ease; will-change: left, transform, opacity;
     }
-    #ball { width: clamp(90px, 25vw, 200px); cursor: pointer; position: relative; }
+    #ball { width: clamp(85px, 22vw, 180px); cursor: pointer; position: relative; }
     #ball img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 8px 15px rgba(0,0,0,0.5)); }
     
-    /* ✅ STATIC FOOT (Box এর সাথে লাগানো) */
+    /* Static Foot */
     #static-foot {
       position: absolute;
-      right: -5%; /* পারফেক্ট পজিশন */
+      right: -5%; 
       bottom: 15%;
       font-size: clamp(25px, 8vw, 60px);
       pointer-events: none;
@@ -223,11 +224,11 @@
     }
     button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    /* ✅ মোবাইল স্ক্রিন ফিক্স (Extra Safe) */
-    @media (max-height: 650px) {
-      #goal-post { top: 25%; font-size: 140px; }
-      #keeper-container { top: 42%; width: 75px; }
-      #ui { top: 12%; } /* ছোট স্ক্রিনেও সেফ ডিস্টেন্স */
+    /* ✅ এক্সট্রা সেফটি ছোট ফোনের জন্য */
+    @media (max-height: 600px) {
+      #ui { top: 20%; }
+      #goal-post { top: 30%; font-size: 140px; }
+      #keeper-container { top: 48%; width: 70px; }
       #salam-char { width: 35vw; }
     }
   </style>
@@ -487,7 +488,7 @@
           msg.textContent = "GOAL!";
           msg.classList.add("msg-goal", "show-msg");
           
-          music.volume = 0.1; // Ducking
+          music.volume = 0.1; 
           playSfx(sfxGoal);
           fireConfetti();
           
@@ -504,7 +505,7 @@
           ballAnim.style.left = aim === "left" ? "25%" : "75%";
           ballAnim.classList.add("ball-miss");
           
-          music.volume = 0.3; // Ducking
+          music.volume = 0.3;
           playSfx(sfxMiss);
           setTimeout(() => { if(state.active) music.volume = 0.5; }, 1500);
 

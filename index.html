@@ -65,7 +65,7 @@
       max-width: 45vw;
     }
 
-    /* --- ২. বোট গ্রুপ + স্লোগান (ডানে) --- */
+    /* --- ২. বোট গ্রুপ (ডানে) --- */
     #boat-group-right {
       position: fixed; top: 10px; right: 10px; z-index: 60;
       display: flex; flex-direction: column; align-items: center;
@@ -106,7 +106,7 @@
       display: flex; align-items: center; justify-content: center; font-size: 12px;
     }
 
-    /* --- ৪. গোলপোস্ট --- */
+    /* --- ৪. গোলপোস্ট (সাদা) --- */
     #goal-post {
       position: absolute; top: 20%; left: 50%; transform: translateX(-50%);
       font-size: clamp(200px, 60vw, 450px);
@@ -125,7 +125,7 @@
     .keeper-laugh { animation: shake 0.5s infinite; }
     .keeper-cry { animation: bounce 0.4s infinite alternate; }
 
-    /* --- ৬. সালাম ক্যারেক্টার (বাম কোণায়) --- */
+    /* --- ৬. সালাম ক্যারেক্টার --- */
     #salam-char {
       position: absolute; 
       bottom: 0; left: 0;
@@ -184,9 +184,11 @@
       flex-direction: column; justify-content: center; align-items: center;
       z-index: 100; text-align: center; padding: 15px;
     }
-    #overlay h1 { color: #fff; font-size: clamp(20px, 6vw, 40px); margin-bottom: 15px; }
-    #final-score { display: none; color: #FFD700; font-size: 18px; margin-bottom: 14px; }
+    #overlay h1 { color: #fff; font-size: clamp(20px, 6vw, 40px); margin-bottom: 10px; }
+    #final-score { display: none; color: #FFD700; font-size: 24px; font-weight: bold; margin-bottom: 8px; }
+    #best-score-display { display: none; color: #2ecc71; font-size: 18px; margin-bottom: 15px; font-weight: bold; }
     #overlay .hint { color: #d1d5db; font-size: 11px; margin-top: 14px; opacity: 0.8; }
+    
     button {
       padding: 12px 35px; font-size: 18px; border: none; border-radius: 50px;
       background: linear-gradient(45deg, #FF416C, #FF4B2B); color: #fff;
@@ -194,6 +196,7 @@
     }
     button:disabled { opacity: 0.5; cursor: not-allowed; }
 
+    /* --- মোবাইল ফিক্স --- */
     @media (max-height: 650px) {
       #goal-post { top: 15%; font-size: 160px; }
       #keeper-container { top: 34%; width: 85px; }
@@ -255,7 +258,9 @@
 
     <div id="overlay">
       <h1 id="overlay-title">VOTE KHELA PRO</h1>
-      <div id="final-score">Final Score: 0</div>
+      <div id="final-score">Score: 0</div>
+      <div id="best-score-display">Best: 0</div>
+      
       <button id="startBtn" disabled>ম্যাচ শুরু ▶</button>
       <div class="hint">বামে বা ডানে ট্যাপ করে শট নিন</div>
     </div>
@@ -266,14 +271,14 @@
     const keeperLaughSrc   = "laugh.png";
     const keeperCrySrc     = "cry.png";
     const salamSrc         = "salam.png";
-    const noSalamSrc       = "no_salam.png"; // ✅ New Image
+    const noSalamSrc       = "no_salam.png";
     const boxSrc           = "box.png";
     const boatSrc          = "boat.png";
     const introSrc         = "intro.jpg";
 
     const gameContainer = document.getElementById("game-container");
     const ballAnim      = document.getElementById("ball-container");
-    const salamImg      = document.querySelector("#salam-char img"); // Select Image Element
+    const salamImg      = document.querySelector("#salam-char img");
     const salamDiv      = document.getElementById("salam-char");
     const keeperImg     = document.getElementById("keeper-img");
     const keeperCont    = document.getElementById("keeper-container");
@@ -287,10 +292,15 @@
     const overlay       = document.getElementById("overlay");
     const overlayTitle  = document.getElementById("overlay-title");
     const finalScoreEl  = document.getElementById("final-score");
+    const bestScoreEl   = document.getElementById("best-score-display");
     const startBtn      = document.getElementById("startBtn");
     const muteBtn       = document.getElementById("muteBtn");
 
     const state = { score: 0, lives: 5, isKicking: false, active: false };
+    
+    // ✅ হাই স্কোর লোড করা
+    let bestScore = parseInt(localStorage.getItem('vp_best')) || 0;
+    
     let assetsReady = false;
 
     muteBtn.addEventListener("click", (e) => {
@@ -347,6 +357,7 @@
       if (!assetsReady) return;
       overlayTitle.textContent = "VOTE KHELA PRO";
       finalScoreEl.style.display = "none";
+      bestScoreEl.style.display = "none";
       overlay.style.display = "none";
 
       state.score = 0;
@@ -386,16 +397,18 @@
         keeperCont.style.transform = `translateX(calc(-50% + ${moveX}px))`;
 
         ballAnim.style.left = aim === "left" ? "40%" : "60%";
+        
+        // ✅ Safe Clean Up
         msg.classList.remove("msg-goal", "msg-miss", "show-msg");
 
         if (isGoal) {
           ballAnim.classList.add("ball-goal");
           msg.textContent = "GOAL!";
-          msg.className = "msg-goal show-msg";
+          msg.classList.add("msg-goal", "show-msg");
+          
           setTimeout(() => {
             state.score++; updateUI();
             
-            // ✅ Goal: Happy Face
             salamImg.src = salamSrc; 
             salamDiv.classList.add("salam-happy");
             
@@ -408,11 +421,12 @@
           
           const isSaved = (aim === keeperDive);
           msg.textContent = isSaved ? "SAVED!" : "MISS!";
-          msg.className = "msg-miss show-msg";
+          msg.classList.add("msg-miss", "show-msg");
           
           state.lives--; updateUI();
           setTimeout(() => {
-            // ✅ Miss: Angry/Sad Face
+            // Miss হলে সাথে সাথে Happy রিমুভ
+            salamDiv.classList.remove("salam-happy");
             salamImg.src = noSalamSrc;
             
             keeperImg.src = keeperLaughSrc;
@@ -430,9 +444,8 @@
     function resetRound(hardReset) {
       ballAnim.classList.remove("ball-goal", "ball-miss");
       ballAnim.style.left = "50%";
-      msg.className = "";
+      msg.classList.remove("show-msg", "msg-goal", "msg-miss");
       
-      // ✅ Reset to Normal Face
       salamImg.src = salamSrc;
       salamDiv.classList.remove("salam-happy");
       
@@ -448,9 +461,20 @@
       state.isKicking = false;
       music.pause();
       music.currentTime = 0;
+
+      // ✅ হাই স্কোর চেক ও সেভ
+      if (state.score > bestScore) {
+        bestScore = state.score;
+        localStorage.setItem('vp_best', bestScore);
+      }
+
       overlayTitle.textContent = "GAME OVER";
-      finalScoreEl.textContent = `Final Score: ${state.score}`;
+      finalScoreEl.textContent = `Score: ${state.score}`;
+      bestScoreEl.textContent = `Best: ${bestScore} 🏆`;
+      
       finalScoreEl.style.display = "block";
+      bestScoreEl.style.display = "block";
+
       startBtn.textContent = "Play Again 🔄";
       startBtn.onclick = () => {
         startBtn.onclick = startGame;

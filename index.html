@@ -16,7 +16,8 @@
 
     #game-container {
       position: relative; width: 100vw; height: 100vh;
-      background: linear-gradient(to bottom, #87CEEB 0%, #E0F7FA 30%, #4CAF50 30%, #2E7D32 100%);
+      /* ঘাসের টেক্সচার এবং আকাশ */
+      background: linear-gradient(to bottom, #87CEEB 0%, #E0F7FA 30%, #2E7D32 30%, #1b5e20 100%);
       overflow: hidden; will-change: transform;
     }
 
@@ -41,7 +42,7 @@
       opacity: 1; transition: opacity 0.5s ease;
     }
     #intro-layer img {
-      max-width: 85%; max-height: 60vh;
+      max-width: 90%; max-height: 60vh;
       border: 3px solid #fff; border-radius: 10px;
       margin-bottom: 20px;
     }
@@ -53,51 +54,47 @@
     }
     @keyframes pulseBtn { 0%,100%{transform:scale(1);} 50%{transform:scale(1.05);} }
 
-    /* --- ১. মেইন স্লোগান (বামে কোণায় - ফিক্সড) --- */
+    /* --- ১. মেইন স্লোগান (বামে) --- */
     #slogan-left {
-      position: absolute; top: 15px; left: 15px; z-index: 30;
+      position: absolute; top: 10px; left: 10px; z-index: 30;
       color: #FFD700; font-weight: 800;
       font-size: clamp(11px, 3.5vw, 18px);
       text-shadow: 1px 1px 2px #000; text-align: left;
       background: rgba(0, 0, 0, 0.6); padding: 8px 12px; border-radius: 8px;
       border-left: 3px solid #FFD700;
       pointer-events: none; line-height: 1.4;
-      max-width: 40vw;
+      max-width: 45vw;
     }
 
-    /* --- ২. বোট গ্রুপ (ডানে উপরে + স্লোগান) --- */
+    /* --- ২. বোট গ্রুপ + স্লোগান (ডানে) --- */
     #boat-group-right {
-      position: fixed; top: 15px; right: 15px; z-index: 60;
+      position: fixed; top: 10px; right: 10px; z-index: 60;
       display: flex; flex-direction: column; align-items: center;
       pointer-events: none; transform-origin: top right;
       animation: floatGroup 3s ease-in-out infinite;
     }
     #boat-group-right img {
-      width: clamp(70px, 20vw, 130px);
+      width: clamp(70px, 20vw, 120px);
       height: auto; display: block;
       filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
       animation: boatRock 3s ease-in-out infinite;
     }
-    /* নতুন স্লোগান বক্স */
     .mini-slogan-box {
       margin-top: -5px;
       background: #d63031; color: white;
-      font-weight: 900; font-size: clamp(10px, 3vw, 14px);
-      padding: 4px 10px; border-radius: 12px;
+      font-weight: 900; font-size: clamp(9px, 2.5vw, 12px);
+      padding: 4px 8px; border-radius: 8px;
       border: 1px solid white;
       box-shadow: 0 3px 6px rgba(0,0,0,0.4);
       text-align: center; white-space: nowrap;
       z-index: 61;
     }
-
-    @keyframes floatGroup { 0%,100%{transform:translateY(0);} 50%{transform:translateY(6px);} }
+    @keyframes floatGroup { 0%,100%{transform:translateY(0);} 50%{transform:translateY(5px);} }
     @keyframes boatRock { 0%,100%{transform:rotate(0deg);} 25%{transform:rotate(-3deg);} 75%{transform:rotate(3deg);} }
 
-    /* --- ৩. স্কোরবোর্ড (গোলপোস্টের উপরে) --- */
+    /* --- ৩. স্কোরবোর্ড --- */
     #ui {
-      position: absolute; 
-      top: 18%; /* গোলপোস্টের একটু উপরে */
-      left: 50%; transform: translateX(-50%);
+      position: absolute; top: 15%; left: 50%; transform: translateX(-50%);
       z-index: 35; display: flex; align-items: center; gap: 8px;
       color: #fff; font-size: clamp(14px, 4vw, 20px); font-weight: 800;
       background: #e63946; padding: 6px 15px; border-radius: 20px;
@@ -110,19 +107,19 @@
       display: flex; align-items: center; justify-content: center; font-size: 12px;
     }
 
-    /* --- ৪. গোলপোস্ট (সাদা রিয়েলিস্টিক লুক) --- */
+    /* --- ৪. গোলপোস্ট (Real Look - White) --- */
     #goal-post {
-      position: absolute; top: 25%; left: 50%; transform: translateX(-50%);
+      position: absolute; top: 20%; left: 50%; transform: translateX(-50%);
       font-size: clamp(200px, 60vw, 450px);
       z-index: 2; pointer-events: none;
-      /* এই ফিল্টারটি ইমোজিকে সাদা/ধূসর করে দেবে */
-      filter: grayscale(100%) brightness(200%) drop-shadow(0 10px 10px rgba(0,0,0,0.4));
+      /* পিংক ইমোজিকে সাদা করার জন্য ফিল্টার */
+      filter: grayscale(100%) brightness(300%) drop-shadow(0 10px 15px rgba(0,0,0,0.5));
       line-height: 0;
     }
 
     /* --- ৫. গোলকিপার --- */
     #keeper-container {
-      position: absolute; top: 42%; left: 50%; transform: translateX(-50%);
+      position: absolute; top: 38%; left: 50%; transform: translateX(-50%);
       width: clamp(90px, 25vw, 190px);
       z-index: 5; pointer-events: none; transition: transform 0.2s ease-out;
     }
@@ -130,32 +127,26 @@
     .keeper-laugh { animation: shake 0.5s infinite; }
     .keeper-cry { animation: bounce 0.4s infinite alternate; }
 
-    /* --- ৬. সালাম ইমেজ (FIXED: বামে কাটবে না) --- */
+    /* --- ৬. সালাম ইমেজ (FIXED) --- */
     #salam-char {
       position: absolute; 
-      bottom: 0; 
-      left: 0; /* বামে লেগে থাকবে, কিন্তু কাটবে না */
+      bottom: 0; left: 0;
       width: clamp(200px, 50vw, 550px);
       z-index: 10; pointer-events: none;
-      /* ছবি যেন রেশিও ঠিক রাখে */
-      display: flex; align-items: flex-end;
+      filter: drop-shadow(5px 5px 15px rgba(0,0,0,0.5));
     }
-    #salam-char img { 
-      width: 100%; height: auto; 
-      filter: drop-shadow(5px 5px 15px rgba(0,0,0,0.5)); 
-      object-fit: contain;
-    }
+    #salam-char img { width: 100%; height: auto; display: block; }
     .salam-happy { animation: bounceBig 0.6s infinite alternate; }
     @keyframes bounceBig { from { transform: translateY(0); } to { transform: translateY(-20px); } }
 
     /* --- বল --- */
     #ball-container {
-      position: absolute; bottom: 12%; left: 50%;
+      position: absolute; bottom: 10%; left: 50%;
       transform: translateX(-50%) rotate(-2deg);
       display: flex; align-items: center; z-index: 20;
       transition: left 0.18s ease; will-change: left, transform, opacity;
     }
-    #ball { width: clamp(100px, 25vw, 220px); cursor: pointer; }
+    #ball { width: clamp(100px, 25vw, 200px); cursor: pointer; }
     #ball img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 8px 15px rgba(0,0,0,0.5)); }
     
     .line { position: absolute; bottom: 30%; left: 0; width: 100%; height: 2vh; background: #fff; opacity: 0.6; }
@@ -188,7 +179,7 @@
       100% { opacity: 0; transform: translate(-50%, -150px) scale(1.5); }
     }
 
-    /* মেনু ওভারলে */
+    /* ওভারলে */
     #overlay {
       position: absolute; inset: 0; background: rgba(0,0,0,0.85);
       display: none;
@@ -205,15 +196,12 @@
     }
     button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
-    @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-15px); } }
-
-    /* --- মোবাইল ফিক্স --- */
+    /* --- মোবাইল স্ক্রিন ফিক্স --- */
     @media (max-height: 650px) {
-      #goal-post { top: 20%; font-size: 160px; }
-      #keeper-container { top: 38%; width: 85px; }
-      #ui { top: 12%; }
-      #salam-char { width: 45vw; }
+      #goal-post { top: 15%; font-size: 160px; }
+      #keeper-container { top: 34%; width: 85px; }
+      #ui { top: 10%; }
+      #salam-char { width: 40vw; }
     }
   </style>
 </head>
@@ -398,6 +386,7 @@
       let goalChance = (aim !== keeperDive) ? (0.90 - level * 0.03) : (0.30 - level * 0.01);
       const isGoal = Math.random() < Math.max(0.15, Math.min(0.92, goalChance));
 
+      // কিক এনিমেশন (পা নেই, শুধু বল মুভ হবে)
       setTimeout(() => {
         const moveX = keeperDive === "left" ? -50 : 50;
         keeperCont.style.transform = `translateX(calc(-50% + ${moveX}px))`;
@@ -434,7 +423,7 @@
           if (state.lives <= 0) gameOver();
           else resetRound(false);
         }, 1800);
-      }, 50);
+      }, 50); // Delay reduced as no leg anim
     }
 
     function resetRound(hardReset) {

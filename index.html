@@ -20,13 +20,11 @@
       overflow: hidden; will-change: transform;
     }
 
-    /* --- কনফেটি ক্যানভাস --- */
     #confetti-canvas {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
       pointer-events: none; z-index: 100;
     }
 
-    /* --- লোডার --- */
     #loader {
       position: fixed; inset: 0; background: #111; z-index: 200;
       display: flex; flex-direction: column; justify-content: center; align-items: center;
@@ -38,7 +36,6 @@
     }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-    /* --- ইন্ট্রো স্ক্রিন --- */
     #intro-layer {
       position: fixed; inset: 0; background: rgba(0,0,0,0.95);
       z-index: 150; display: none;
@@ -59,27 +56,28 @@
     }
     @keyframes pulseBtn { 0%,100%{transform:scale(1);} 50%{transform:scale(1.05);} }
 
-    /* --- ১. স্লোগান (বামে) --- */
+    /* --- ১. বাম দিকের স্লোগান (Overlap Fix) --- */
     #slogan-left {
       position: absolute; top: 10px; left: 10px; z-index: 30;
       color: #FFD700; font-weight: 800;
-      font-size: clamp(10px, 3.5vw, 16px);
+      font-size: clamp(9px, 3vw, 16px); /* ফন্ট সাইজ একটু কমানো হয়েছে */
       text-shadow: 1px 1px 2px #000; text-align: left;
       background: rgba(0, 0, 0, 0.6); padding: 5px 10px; border-radius: 8px;
       border-left: 3px solid #FFD700;
       pointer-events: none; line-height: 1.4;
-      max-width: 40vw;
+      max-width: 30vw; /* ✅ Width কমানো হয়েছে যাতে মাঝখানে না আসে */
     }
 
-    /* --- ২. বোট গ্রুপ (ডানে) --- */
+    /* --- ২. ডান দিকের স্লোগান (Overlap Fix) --- */
     #boat-group-right {
       position: fixed; top: 10px; right: 10px; z-index: 60;
       display: flex; flex-direction: column; align-items: center;
       pointer-events: none; transform-origin: top right;
       animation: floatGroup 3s ease-in-out infinite;
+      max-width: 30vw; /* ✅ Width কমানো হয়েছে */
     }
     #boat-group-right img {
-      width: clamp(60px, 20vw, 110px);
+      width: clamp(50px, 18vw, 100px);
       height: auto; display: block;
       filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
       animation: boatRock 3s ease-in-out infinite;
@@ -97,14 +95,14 @@
     @keyframes floatGroup { 0%,100%{transform:translateY(0);} 50%{transform:translateY(5px);} }
     @keyframes boatRock { 0%,100%{transform:rotate(0deg);} 25%{transform:rotate(-3deg);} 75%{transform:rotate(3deg);} }
 
-    /* --- ৩. স্কোরবোর্ড --- */
+    /* --- ৩. স্কোরবোর্ড (✅ নিচে নামানো হয়েছে) --- */
     #ui {
       position: absolute; 
-      top: 10%; /* মোবাইলে গোলপোস্ট থেকে দূরে */
+      top: 15%; /* ⚠️ আগে 10% ছিল, এখন 15% - ক্ল্যাশ ফিক্স */
       left: 50%; transform: translateX(-50%);
       z-index: 35; display: flex; align-items: center; gap: 8px;
-      color: #fff; font-size: clamp(14px, 4vw, 20px); font-weight: 800;
-      background: #e63946; padding: 6px 15px; border-radius: 20px;
+      color: #fff; font-size: clamp(12px, 3.5vw, 20px); font-weight: 800;
+      background: #e63946; padding: 5px 12px; border-radius: 20px;
       border: 2px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);
       white-space: nowrap;
     }
@@ -114,23 +112,23 @@
       display: flex; align-items: center; justify-content: center; font-size: 12px;
     }
 
-    /* --- ৪. গোলপোস্ট --- */
+    /* --- ৪. গোলপোস্ট (✅ নিচে নামানো হয়েছে) --- */
     #goal-post {
       position: absolute; 
-      top: 22%; 
+      top: 28%; /* ⚠️ আগে 20% ছিল, এখন 28% */
       left: 50%; transform: translateX(-50%);
-      font-size: clamp(180px, 60vw, 450px);
+      font-size: clamp(160px, 55vw, 450px);
       z-index: 2; pointer-events: none;
       filter: grayscale(100%) brightness(300%) drop-shadow(0 10px 15px rgba(0,0,0,0.5));
       line-height: 0;
     }
 
-    /* --- ৫. গোলকিপার --- */
+    /* --- ৫. গোলকিপার (✅ নিচে নামানো হয়েছে) --- */
     #keeper-container {
       position: absolute; 
-      top: 40%; 
+      top: 46%; /* ⚠️ আগে 38% ছিল, এখন 46% */
       left: 50%; transform: translateX(-50%);
-      width: clamp(80px, 25vw, 190px);
+      width: clamp(80px, 24vw, 190px);
       z-index: 5; pointer-events: none; transition: transform 0.2s ease-out;
     }
     #keeper-container img { width: 100%; height: auto; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5)); }
@@ -141,7 +139,7 @@
     #salam-char {
       position: absolute; 
       bottom: 0; left: 0;
-      width: clamp(180px, 50vw, 550px);
+      width: clamp(180px, 45vw, 550px);
       z-index: 10; pointer-events: none;
       filter: drop-shadow(5px 5px 15px rgba(0,0,0,0.5));
     }
@@ -149,9 +147,9 @@
     .salam-happy { animation: bounceBig 0.6s infinite alternate; }
     @keyframes bounceBig { from { transform: translateY(0); } to { transform: translateY(-20px); } }
 
-    /* --- বল --- */
+    /* --- বল এবং পা --- */
     #ball-container {
-      position: absolute; bottom: 12%; left: 50%;
+      position: absolute; bottom: 10%; left: 50%;
       transform: translateX(-50%) rotate(-2deg);
       display: flex; align-items: center; justify-content: center; z-index: 20;
       transition: left 0.18s ease; will-change: left, transform, opacity;
@@ -159,16 +157,15 @@
     #ball { width: clamp(90px, 25vw, 200px); cursor: pointer; position: relative; }
     #ball img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 8px 15px rgba(0,0,0,0.5)); }
     
-    /* ✅ STATIC FOOT ADJUSTMENT (ফিক্স করা হয়েছে) */
+    /* ✅ STATIC FOOT (Box এর সাথে লাগানো) */
     #static-foot {
       position: absolute;
-      right: -2%; /* বক্সের আরও কাছে */
-      bottom: 20%; /* একটু উপরে যাতে মনে হয় কিক করবে */
-      font-size: clamp(35px, 10vw, 70px);
+      right: -5%; /* পারফেক্ট পজিশন */
+      bottom: 15%;
+      font-size: clamp(25px, 8vw, 60px);
       pointer-events: none;
       filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5));
-      transform: rotate(-15deg); /* কিকিং অ্যাঙ্গেল */
-      z-index: 21; /* বলের উপরে */
+      transform: rotate(-15deg);
     }
 
     .line { position: absolute; bottom: 30%; left: 0; width: 100%; height: 2vh; background: #fff; opacity: 0.6; }
@@ -226,11 +223,12 @@
     }
     button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    @media (max-height: 600px) {
-      #goal-post { top: 18%; font-size: 150px; }
-      #keeper-container { top: 35%; width: 80px; }
-      #ui { top: 8%; }
-      #salam-char { width: 40vw; }
+    /* ✅ মোবাইল স্ক্রিন ফিক্স (Extra Safe) */
+    @media (max-height: 650px) {
+      #goal-post { top: 25%; font-size: 140px; }
+      #keeper-container { top: 42%; width: 75px; }
+      #ui { top: 12%; } /* ছোট স্ক্রিনেও সেফ ডিস্টেন্স */
+      #salam-char { width: 35vw; }
     }
   </style>
 </head>

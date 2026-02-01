@@ -223,7 +223,6 @@
   <canvas id="confetti-canvas"></canvas>
 
   <audio id="bg-music" loop preload="auto"><source src="FBDownloader.to-4256735371281819-(320kbps).mp3" type="audio/mpeg"></audio>
-  
   <audio id="sfx-kick" preload="auto"><source src="kick.mp3" type="audio/mpeg"></audio>
   <audio id="sfx-goal" preload="auto"><source src="goal.mp3" type="audio/mpeg"></audio>
   <audio id="sfx-miss" preload="auto"><source src="miss.mp3" type="audio/mpeg"></audio>
@@ -303,6 +302,7 @@
 
     const gameContainer = document.getElementById("game-container");
     const ballAnim      = document.getElementById("ball-container");
+    const ballImg       = document.getElementById("ball-img");
     const salamImg      = document.querySelector("#salam-char img");
     const salamDiv      = document.getElementById("salam-char");
     const keeperImg     = document.getElementById("keeper-img");
@@ -388,7 +388,6 @@
         window.open(url, '_blank');
     });
 
-    // Check Assets
     const assets = [introSrc, keeperDefaultSrc, keeperLaughSrc, keeperCrySrc, salamSrc, noSalamSrc, boxSrc, boatSrc];
 
     function preloadImages(list) {
@@ -458,7 +457,7 @@
 
     function kickBall(aim) {
       state.isKicking = true;
-      playSfx(sfxKick); // Play Kick Sound
+      playSfx(sfxKick); // Kick Sound
 
       const keeperDive = Math.random() < 0.5 ? "left" : "right";
       
@@ -478,15 +477,18 @@
           msg.textContent = "GOAL!";
           msg.classList.add("msg-goal", "show-msg");
           
-          playSfx(sfxGoal); // Play Goal Sound
+          // ✅ Ducking Logic: Lower BG, Play Goal SFX
+          music.volume = 0.2; 
+          playSfx(sfxGoal);
           fireConfetti();
+          
+          // Restore BG Music Volume
+          setTimeout(() => { if(state.active) music.volume = 0.5; }, 2500);
           
           setTimeout(() => {
             state.score++; updateUI();
-            
             salamImg.src = salamSrc; 
             salamDiv.classList.add("salam-happy");
-            
             keeperImg.src = keeperCrySrc;
             keeperCont.classList.add("keeper-cry");
           }, 450);
@@ -494,7 +496,10 @@
           ballAnim.style.left = aim === "left" ? "25%" : "75%";
           ballAnim.classList.add("ball-miss");
           
-          playSfx(sfxMiss); // Play Miss Sound
+          // Miss SFX
+          music.volume = 0.3;
+          playSfx(sfxMiss);
+          setTimeout(() => { if(state.active) music.volume = 0.5; }, 1500);
 
           const isSaved = (aim === keeperDive);
           msg.textContent = isSaved ? "SAVED!" : "MISS!";
@@ -504,7 +509,6 @@
           setTimeout(() => {
             salamDiv.classList.remove("salam-happy");
             salamImg.src = noSalamSrc;
-            
             keeperImg.src = keeperLaughSrc;
             keeperCont.classList.add("keeper-laugh");
           }, 450);

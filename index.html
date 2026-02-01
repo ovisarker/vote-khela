@@ -3,233 +3,224 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Vote Khela: Penalty Shootout</title>
+    <title>Vote Penalty: Salam Edition</title>
     <style>
         /* --- গেমের ডিজাইন --- */
-        body { margin: 0; overflow: hidden; background: #000; font-family: sans-serif; touch-action: none; }
+        body { margin: 0; overflow: hidden; background: #000; font-family: 'Arial', sans-serif; touch-action: none; }
         
-        /* ব্যাকগ্রাউন্ড (ইমেজ লাগবে না, কোড দিয়েই কালার করা হলো) */
+        /* স্টেডিয়াম ব্যাকগ্রাউন্ড (সবুজ গ্রাডিয়েন্ট) */
         #game-container {
             position: relative; width: 100vw; height: 100vh;
-            background: linear-gradient(to bottom, #4CAF50, #2E7D32); /* স্টেডিয়ামের ঘাসের রঙ */
+            background: linear-gradient(to bottom, #56ab2f, #a8e063); 
             overflow: hidden;
+        }
+        
+        /* মাঠের সাদা দাগ (Lines) */
+        .line {
+            position: absolute; bottom: 35%; left: 0; width: 100%; height: 8px;
+            background: rgba(255,255,255,0.7);
+        }
+        .box-area {
+            position: absolute; bottom: 35%; left: 50%; transform: translateX(-50%);
+            width: 70%; height: 120px; border: 6px solid rgba(255,255,255,0.7); border-top: none;
         }
 
         /* স্কোরবোর্ড */
         #ui {
-            position: absolute; top: 20px; left: 20px; z-index: 10;
-            color: #fff; font-size: 20px; font-weight: bold;
-            text-shadow: 2px 2px 4px #000;
-            background: rgba(0,0,0,0.3); padding: 8px 15px; border-radius: 10px;
+            position: absolute; top: 20px; right: 20px; z-index: 20;
+            color: #fff; font-size: 24px; font-weight: bold;
+            background: rgba(0,0,0,0.5); padding: 10px 25px; border-radius: 50px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3); border: 2px solid rgba(255,255,255,0.2);
         }
 
-        /* গোল পোস্ট (ইমোজি দিয়ে তৈরি) */
-        #goal {
-            position: absolute; top: 12%; left: 50%;
+        /* গোল পোস্ট (ইমোজি) */
+        #goal-post {
+            position: absolute; top: 8%; left: 50%;
             transform: translateX(-50%);
-            font-size: 150px; /* গোল পোস্টের সাইজ */
-            z-index: 1; opacity: 0.8;
-            pointer-events: none;
+            font-size: 160px; z-index: 1; opacity: 0.9;
+            pointer-events: none; filter: drop-shadow(0 10px 10px rgba(0,0,0,0.4));
         }
 
-        /* টার্গেট (আপনার আপলোড করা বক্স এবং সালাম ছবি) */
-        #target {
-            position: absolute; bottom: 25%; left: 50%;
+        /* --- সালাম ইমেজ --- */
+        #salam-char {
+            position: absolute; 
+            bottom: 32%; /* একটু উপরে যাতে গোলপোস্টের পাশে মনে হয় */
+            left: 5%;    /* বাম পাশে থাকবে */
+            width: 150px; /* সাইজ */
+            z-index: 5;
+            transition: transform 0.2s ease;
+        }
+        #salam-char img { 
+            width: 100%; height: auto; 
+            filter: drop-shadow(5px 10px 15px rgba(0,0,0,0.5)); /* ছায়া */
+        }
+
+        /* সালাম এনিমেশন (গোল হলে লাফাবে) */
+        .salam-happy {
+            animation: bounce 0.6s infinite alternate;
+        }
+        @keyframes bounce {
+            from { transform: translateY(0) scale(1); }
+            to { transform: translateY(-30px) scale(1.1); }
+        }
+
+        /* --- ব্যালট বক্স (বল) --- */
+        #ball {
+            position: absolute; bottom: 12%; left: 50%;
             transform: translateX(-50%);
-            width: 120px; height: 120px;
-            z-index: 5; transition: transform 0.1s;
-            display: flex; justify-content: center; align-items: flex-end;
+            width: 110px; height: 110px;
+            z-index: 10; cursor: pointer;
+            transition: transform 0.1s;
         }
-        #target img { 
-            max-width: 100%; max-height: 100%; 
-            object-fit: contain; /* ছবি চ্যাপ্টা হবে না */
-            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.5)); 
+        #ball img { 
+            width: 100%; height: 100%; object-fit: contain; 
+            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.6));
         }
 
-        /* প্লেয়ারের পা (ইমোজি দিয়ে তৈরি) */
+        /* বল কিক করার এনিমেশন (ঘুরতে ঘুরতে জালে যাবে) */
+        .ball-kick {
+            animation: shootGoal 0.9s forwards cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        @keyframes shootGoal {
+            0% { bottom: 12%; transform: translateX(-50%) scale(1) rotate(0deg); }
+            100% { bottom: 75%; transform: translateX(-50%) scale(0.3) rotate(720deg); opacity: 0; }
+        }
+
+        /* পা (Leg Emoji) */
         #leg {
-            position: absolute; bottom: -50px; right: -20px;
-            font-size: 150px; /* পায়ের সাইজ */
-            transform-origin: bottom right;
-            transform: rotate(0deg);
-            z-index: 10; pointer-events: none;
-            transition: transform 0.1s ease-out;
+            position: absolute; bottom: -120px; right: -50px;
+            font-size: 150px; z-index: 11; pointer-events: none;
+            transition: transform 0.15s ease-out;
+            transform: rotate(0deg); transform-origin: bottom right;
+        }
+        .leg-kick { 
+            transform: rotate(-45deg) translate(-50px, -50px) !important; 
         }
 
-        /* এনিমেশন এফেক্টস */
-        .kick-anim { transform: rotate(-45deg) translateX(-30px) !important; }
+        /* গোল মেসেজ (GOAL Text) */
+        #msg {
+            position: absolute; top: 45%; left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 90px; font-weight: 900; color: #f1c40f;
+            text-shadow: 5px 5px #c0392b;
+            opacity: 0; z-index: 30; pointer-events: none;
+        }
+        .show-msg { animation: popMsg 1.2s forwards; }
         
-        .goal-fly { 
-            animation: flyToGoal 0.8s forwards ease-out;
-        }
-        @keyframes flyToGoal {
-            0% { transform: translateX(-50%) scale(1); bottom: 25%; }
-            100% { transform: translateX(-50%) scale(0.3) rotate(720deg); bottom: 70%; opacity: 0; }
-        }
-
-        .foul-shake { animation: shake 0.5s forwards; }
-        @keyframes shake {
-            0%, 100% { transform: translateX(-50%); }
-            25% { transform: translateX(-60%) rotate(-10deg); }
-            75% { transform: translateX(-40%) rotate(10deg); }
-        }
-
-        /* পপআপ টেক্সট (GOAL / FOUL) */
-        .popup {
-            position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 60px; font-weight: 900; color: yellow;
-            text-shadow: 4px 4px #000; z-index: 20;
-            animation: popUp 1s forwards; pointer-events: none;
-        }
-        @keyframes popUp {
-            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+        @keyframes popMsg {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0); }
             50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
-            100% { opacity: 0; transform: translate(-50%, -100px) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -150px) scale(1); }
         }
 
-        /* স্ক্রিন ওভারলে (Start/Game Over) */
-        .overlay {
+        /* স্টার্ট স্ক্রিন */
+        #overlay {
             position: absolute; inset: 0; background: rgba(0,0,0,0.85);
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            z-index: 50; text-align: center; color: white;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100;
         }
-        .hidden { display: none; }
         button {
-            background: #ff4757; color: white; border: none;
-            padding: 15px 30px; font-size: 22px; border-radius: 30px;
-            cursor: pointer; margin-top: 20px; font-weight: bold;
+            padding: 15px 50px; font-size: 24px; border: none; border-radius: 50px;
+            background: linear-gradient(45deg, #ff416c, #ff4b2b); 
+            color: white; font-weight: bold; cursor: pointer;
+            box-shadow: 0 10px 20px rgba(255, 75, 43, 0.5);
+            transition: transform 0.2s;
         }
+        button:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
 
 <audio id="bg-music" loop>
-    <source src="music.mp3" type="audio/mpeg">
+    <source src="FBDownloader.to-4256735371281819-(320kbps).mp3" type="audio/mpeg">
 </audio>
 
 <div id="game-container">
-    <div id="ui">
-        GOAL: <span id="score">0</span> | CHANCE: <span id="life">⚽⚽⚽</span>
+    <div id="ui">GOALS: <span id="score">0</span></div>
+
+    <div id="goal-post">🥅</div>
+
+    <div class="line"></div>
+    <div class="box-area"></div>
+
+    <div id="salam-char">
+        <img src="Gemini_Generated_Image_95l72b95l72b95l7.png" alt="Salam Character">
     </div>
 
-    <div id="goal">🥅</div>
-    
-    <div id="target"></div>
-    
+    <div id="ball">
+        <img src="box.png" alt="Ballot Box">
+    </div>
+
     <div id="leg">🦵</div>
 
-    <div id="start-screen" class="overlay">
-        <h1>VOTE KHELA 🗳️</h1>
-        <p>বক্স (Box) দেখলে <b>শুট</b> করুন।</p>
-        <p>সালাম (Salam) দিলে <b>শুট করবেন না!</b></p>
-        <button onclick="startGame()">PLAY GAME ▶</button>
-    </div>
+    <div id="msg">GOAL!</div>
 
-    <div id="game-over" class="overlay hidden">
-        <h1 style="color:red">GAME OVER!</h1>
-        <p id="reason"></p>
-        <h2>Score: <span id="final-score">0</span></h2>
-        <button onclick="location.reload()">TRY AGAIN ↻</button>
+    <div id="overlay">
+        <h1 style="color:white; margin-bottom:20px;">VOTE PENALTY 🗳️</h1>
+        <button onclick="startGame()">ম্যাচ শুরু করুন ▶</button>
     </div>
 </div>
 
 <script>
-    const container = document.getElementById('game-container');
-    const target = document.getElementById('target');
+    const ball = document.getElementById('ball');
     const leg = document.getElementById('leg');
+    const salam = document.getElementById('salam-char');
+    const msg = document.getElementById('msg');
+    const scoreEl = document.getElementById('score');
     const music = document.getElementById('bg-music');
-
+    
     let score = 0;
-    let lives = 3;
-    let active = false;
-    let cooldown = false;
-    let currentType = '';
+    let isKicking = false;
 
     function startGame() {
-        document.getElementById('start-screen').classList.add('hidden');
-        active = true;
-        // মিউজিক প্লে করার চেষ্টা (ইউজার ইন্টার‍্যাকশন লাগে)
+        document.getElementById('overlay').style.display = 'none';
+        
+        // মিউজিক চালু (ব্রাউজার পলিসির কারণে ইউজারের ইন্টার‍্যাকশন দরকার হয়)
         music.volume = 0.5;
-        music.play().catch(e => console.log("Tap to play music"));
+        music.play().catch(e => console.log("Music waiting for interaction"));
         
-        container.addEventListener('pointerdown', kick); // টাচ বা ক্লিক করলে কিক হবে
-        spawnTarget();
+        // মাউস ক্লিক বা টাচ করলে কিক হবে
+        document.getElementById('game-container').addEventListener('mousedown', kickBall);
+        document.getElementById('game-container').addEventListener('touchstart', (e) => {
+            e.preventDefault(); // জুম বন্ধ করার জন্য
+            kickBall();
+        });
     }
 
-    function spawnTarget() {
-        if (!active) return;
-        
-        target.className = ''; 
-        target.style.opacity = '0';
-        cooldown = false;
+    function kickBall() {
+        if (isKicking) return;
+        isKicking = true;
 
+        // ১. পা দিয়ে লাথি মারা (Animation)
+        leg.classList.add('leg-kick');
+
+        // ২. বল উড়ে যাওয়া (একটু দেরিতে)
         setTimeout(() => {
-            // ৭০% চান্স বক্স, ৩০% চান্স সালাম
-            currentType = Math.random() > 0.3 ? 'box' : 'salam';
+            leg.classList.remove('leg-kick'); // পা আগের জায়গায়
+            ball.classList.add('ball-kick');  // বল গোলপোস্টের দিকে যাবে
             
-            // আপনার আপলোড করা ইমেজের নাম ব্যবহার করা হয়েছে
-            if(currentType === 'box') {
-                target.innerHTML = '<img src="box.png" alt="Box">';
-            } else {
-                target.innerHTML = '<img src="salam.png" alt="Salam">';
-            }
-            
-            target.style.opacity = '1';
-        }, 500);
-    }
-
-    function kick(e) {
-        if (!active || cooldown || target.style.opacity == '0') return;
-        cooldown = true;
-
-        // ১. লাথির এনিমেশন
-        leg.classList.add('kick-anim');
-        setTimeout(() => leg.classList.remove('kick-anim'), 150);
-
-        // ২. রেজাল্ট চেক (একটু দেরিতে যাতে লাথির সাথে মিলে)
-        setTimeout(() => {
-            if (currentType === 'box') {
-                // গোল!
-                score++;
-                document.getElementById('score').innerText = score;
-                showPopup("GOAL! ⚽");
-                target.classList.add('goal-fly');
-                setTimeout(spawnTarget, 800);
-            } else {
-                // ফাউল!
-                showPopup("FOUL! ❌");
-                target.classList.add('foul-shake');
-                loseLife("সালামে লাথি মেরেছেন!");
-            }
-        }, 100);
-    }
-
-    function showPopup(text) {
-        const el = document.createElement('div');
-        el.className = 'popup';
-        el.innerText = text;
-        container.appendChild(el);
-        setTimeout(() => el.remove(), 1000);
-    }
-
-    function loseLife(msg) {
-        lives--;
-        let hearts = "";
-        for(let i=0; i<lives; i++) hearts += "⚽";
-        document.getElementById('life').innerText = hearts;
-
-        if (lives <= 0) {
+            // ৩. গোল হওয়া এবং রিয়েকশন
             setTimeout(() => {
-                active = false;
-                music.pause();
-                document.getElementById('game-over').classList.remove('hidden');
-                document.getElementById('final-score').innerText = score;
-                document.getElementById('reason').innerText = msg;
-            }, 500);
-        } else {
-            setTimeout(spawnTarget, 800);
-        }
+                score++;
+                scoreEl.innerText = score;
+                
+                // গোল মেসেজ পপ-আপ
+                msg.classList.add('show-msg');
+                
+                // সালাম ক্যারেক্টার খুশিতে লাফাবে
+                salam.classList.add('salam-happy');
+
+                // ৪. রিসেট করা (পরের শটের জন্য বল আবার আসবে)
+                setTimeout(resetGame, 1500);
+            }, 700); // বল জালে পৌঁছানোর টাইমিং
+            
+        }, 150); // পায়ের এনিমেশনের সাথে মিল রেখে টাইমিং
+    }
+
+    function resetGame() {
+        ball.classList.remove('ball-kick');
+        msg.classList.remove('show-msg');
+        salam.classList.remove('salam-happy'); // লাফানো বন্ধ
+        isKicking = false;
     }
 </script>
 

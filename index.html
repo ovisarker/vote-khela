@@ -35,8 +35,7 @@
     /* --- INTRO SCREEN --- */
     #intro-layer {
       position: fixed; inset: 0; background: rgba(0,0,0,0.95);
-      z-index: 150;
-      display: none;
+      z-index: 150; display: none;
       flex-direction: column; justify-content: center; align-items: center;
       padding: 20px; text-align: center;
       opacity: 1; transition: opacity 0.5s ease;
@@ -55,80 +54,72 @@
     }
     @keyframes pulseBtn { 0%,100%{transform:scale(1);} 50%{transform:scale(1.05);} }
 
-    /* --- ✅ Animated Boat (Top-Left Fixed) --- */
-    #boat-top-left {
-      position: fixed;
-      top: 15px;
-      left: 15px;
-      z-index: 65;
-      pointer-events: none;
-      transform-origin: top left;
-      animation: boatFloat 2.5s ease-in-out infinite;
-      filter: drop-shadow(0 8px 12px rgba(0,0,0,0.3));
-    }
-    #boat-top-left img {
-      width: clamp(50px, 12vw, 90px);
-      height: auto;
-      display: block;
-      border-radius: 10px;
-      animation: boatWiggle 3.5s ease-in-out infinite;
-    }
-    @keyframes boatFloat {
-      0%,100% { transform: translateY(0); }
-      50%     { transform: translateY(6px); }
-    }
-    @keyframes boatWiggle {
-      0%,100% { transform: rotate(0deg); }
-      33%     { transform: rotate(-3deg); }
-      66%     { transform: rotate(3deg); }
-    }
-
-    /* --- স্লোগান (বামে, বোটের পাশে) --- */
+    /* --- ১. স্লোগান (Top-Left Corner) --- */
     #slogan {
       position: absolute;
-      top: 18px;
-      left: clamp(70px, 16vw, 120px);
+      top: 15px; left: 15px; /* একদম কোণায় */
       z-index: 30;
-      color: #FFD700;
-      font-weight: 800;
+      color: #FFD700; font-weight: 800;
       font-size: clamp(12px, 3vw, 18px);
       text-shadow: 1px 1px 2px #000;
       text-align: left;
       background: rgba(0, 0, 0, 0.65);
-      padding: 8px 15px;
-      border-radius: 8px;
+      padding: 8px 15px; border-radius: 8px;
       border-left: 4px solid #FFD700;
       pointer-events: none;
       line-height: 1.5;
-      max-width: 60vw;
+      max-width: 45vw; /* যাতে মাঝখানে না আসে */
       white-space: pre-line;
     }
 
-    /* --- UI (Top Right) --- */
+    /* --- ২. বোট ইমেজ (Top-Right Corner) --- */
+    #boat-corner {
+      position: fixed;
+      top: 15px; right: 15px; /* একদম ডানে */
+      z-index: 65; pointer-events: none;
+      transform-origin: top right;
+      animation: boatFloat 2.5s ease-in-out infinite;
+      filter: drop-shadow(0 8px 12px rgba(0,0,0,0.3));
+    }
+    #boat-corner img {
+      width: clamp(60px, 15vw, 100px); /* সাইজ এডজাস্টেড */
+      height: auto; display: block;
+      border-radius: 10px;
+      animation: boatWiggle 3.5s ease-in-out infinite;
+    }
+    @keyframes boatFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
+    @keyframes boatWiggle { 0%,100% { transform: rotate(0deg); } 33% { transform: rotate(-3deg); } 66% { transform: rotate(3deg); } }
+
+    /* --- ৩. স্কোরবোর্ড (Top-Center Middle) --- */
     #ui {
-      position: absolute; top: 10px; right: 10px;
-      z-index: 35; display: flex; align-items: center; gap: 10px;
-      color: #fff; font-size: clamp(13px, 3vw, 18px); font-weight: 800;
-      background: #e63946; padding: 6px 15px; border-radius: 20px;
-      border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+      position: absolute;
+      top: 15px; left: 50%;
+      transform: translateX(-50%); /* একদম মাঝখানে */
+      z-index: 40;
+      display: flex; align-items: center; gap: 10px;
+      color: #fff; font-size: clamp(14px, 3.5vw, 20px); font-weight: 800;
+      background: #e63946; padding: 8px 20px; border-radius: 30px;
+      border: 3px solid white;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
       white-space: nowrap;
     }
     #ui .pill { display: inline-flex; align-items: center; gap: 6px; }
     #muteBtn {
-      border: none; border-radius: 999px; padding: 4px 10px;
-      cursor: pointer; font-weight: 900;
+      border: none; border-radius: 50%; width: 30px; height: 30px;
+      cursor: pointer; font-weight: 900; font-size: 14px;
       background: rgba(0,0,0,0.25); color: #fff;
+      display: flex; align-items: center; justify-content: center;
     }
 
     /* --- গেম অবজেক্টস --- */
     #goal-post {
-      position: absolute; top: 20%; left: 50%; transform: translateX(-50%);
+      position: absolute; top: 22%; left: 50%; transform: translateX(-50%);
       font-size: clamp(220px, 55vw, 450px); z-index: 2; pointer-events: none;
       filter: drop-shadow(0 10px 10px rgba(0,0,0,0.3)); line-height: 0;
     }
 
     #keeper-container {
-      position: absolute; top: 38%; left: 50%; transform: translateX(-50%);
+      position: absolute; top: 40%; left: 50%; transform: translateX(-50%);
       width: clamp(110px, 24vw, 190px); z-index: 5; pointer-events: none;
       transition: transform 0.2s ease-out;
     }
@@ -136,19 +127,25 @@
     .keeper-laugh { animation: shake 0.5s infinite; }
     .keeper-cry { animation: bounce 0.4s infinite alternate; }
 
-    /* --- ✅ আপডেট: সালাম ইমেজ (Big Size + New Name) --- */
+    /* --- ✅ ৪. সালাম ইমেজ ফিক্স (Cut Issue Fixed) --- */
     #salam-char {
       position: absolute;
-      bottom: 5%;
-      left: -5%;
-      width: clamp(300px, 60vw, 600px); /* বিশাল সাইজ */
+      bottom: 0;      /* একদম নিচে লেগে থাকবে */
+      left: 0;        /* একদম বামে লেগে থাকবে */
+      width: clamp(250px, 45vw, 550px); /* রেসপন্সিভ সাইজ */
       z-index: 10;
       pointer-events: none;
+      /* "Half cut" ফিক্স করার জন্য left: 0 এবং bottom: 0 করা হয়েছে */
     }
-    #salam-char img { width: 100%; height: auto; filter: drop-shadow(5px 5px 20px rgba(0,0,0,0.7)); }
+    #salam-char img {
+      width: 100%; height: auto;
+      filter: drop-shadow(5px 5px 20px rgba(0,0,0,0.6));
+      display: block;
+    }
     .salam-happy { animation: bounceBig 0.6s infinite alternate; }
-    @keyframes bounceBig { from { transform: translateY(0); } to { transform: translateY(-25px); } }
+    @keyframes bounceBig { from { transform: translateY(0); } to { transform: translateY(-30px); } }
 
+    /* --- বল --- */
     #ball-container {
       position: absolute; bottom: 8%; left: 50%;
       transform: translateX(-50%) rotate(-2deg);
@@ -233,7 +230,7 @@
     <source src="FBDownloader.to-4256735371281819-(320kbps).mp3" type="audio/mpeg">
   </audio>
 
-  <div id="boat-top-left" aria-hidden="true">
+  <div id="boat-corner" aria-hidden="true">
     <img src="boat.png" alt="Boat">
   </div>
 
@@ -246,7 +243,7 @@
 
     <div id="ui">
       <div class="pill">GOALS: <span id="score">0</span></div>
-      <div class="pill">LIFE: <span id="life">⚽⚽⚽</span></div>
+      <div class="pill" style="border-left:2px solid rgba(255,255,255,0.3); padding-left:8px;">LIFE: <span id="life">⚽⚽⚽</span></div>
       <button id="muteBtn" title="Mute/Unmute">🔊</button>
     </div>
 
@@ -281,11 +278,11 @@
   </div>
 
   <script>
-    // --- ফাইলের নাম (Updated Clean Names) ---
+    // --- ফাইলের নাম ---
     const keeperDefaultSrc = "defense.png";
-    const keeperLaughSrc   = "laugh.png";
+    const keeperLaughSrc   = "laugh.png"; 
     const keeperCrySrc     = "cry.png";
-    const salamSrc         = "salam.png"; // ✅ Renamed
+    const salamSrc         = "salam.png"; 
     const boxSrc           = "box.png";
     const boatSrc          = "boat.png";
     const introSrc         = "intro.jpg";
@@ -358,7 +355,7 @@
       loader.style.opacity = "0";
       setTimeout(() => { loader.style.display = "none"; }, 500);
 
-      // লোড শেষ হলে ইন্ট্রো দেখাও
+      // Intro Show
       introLayer.style.display = "flex";
       introLayer.style.opacity = "1";
       introLayer.style.pointerEvents = "auto";
@@ -367,7 +364,7 @@
 
     window.addEventListener("load", boot);
 
-    // --- Intro Close Function ---
+    // --- Intro Close ---
     function closeIntro() {
       introLayer.style.opacity = "0";
       introLayer.style.pointerEvents = "none";

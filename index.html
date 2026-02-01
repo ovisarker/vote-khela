@@ -3,142 +3,283 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Vote Penalty: Ultimate</title>
+  <title>Penalty Satire: Ultimate (Final)</title>
 
   <style>
     /* --- বেসিক সেটআপ --- */
     body {
-      margin: 0; overflow: hidden; background: #000;
-      font-family: "Segoe UI", sans-serif; touch-action: none; user-select: none;
+      margin: 0;
+      overflow: hidden;
+      background: #000;
+      font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+      touch-action: none;
+      user-select: none;
     }
 
     #game-container {
-      position: relative; width: 100vw; height: 100vh;
+      position: relative;
+      width: 100vw;
+      height: 100vh;
       background: linear-gradient(to bottom, #87CEEB 0%, #E0F7FA 30%, #4CAF50 30%, #2E7D32 100%);
-      overflow: hidden; will-change: transform;
+      overflow: hidden;
+      will-change: transform;
     }
 
     /* --- লোডিং স্ক্রিন --- */
     #loader {
-      position: fixed; inset: 0; background: #111; z-index: 200;
-      display: flex; flex-direction: column; justify-content: center; align-items: center;
-      color: white; font-size: 20px; transition: opacity 0.5s;
+      position: fixed;
+      inset: 0;
+      background: #111;
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 20px;
+      transition: opacity 0.5s;
+      text-align: center;
+      padding: 18px;
     }
     .spinner {
-      width: 40px; height: 40px; border: 4px solid #333; border-top: 4px solid #FFD700;
-      border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px;
+      width: 40px;
+      height: 40px;
+      border: 4px solid #333;
+      border-top: 4px solid #FFD700;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 14px;
     }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    #loading-text { opacity: 0.95; }
 
     /* --- স্লোগান (বামে) --- */
     #slogan {
-      position: absolute; top: 15px; left: 15px; z-index: 30;
-      color: #FFD700; font-weight: 800; font-size: clamp(11px, 3vw, 16px);
-      text-shadow: 1px 1px 2px #000; text-align: left;
-      background: rgba(0, 0, 0, 0.65); padding: 8px 12px; border-radius: 8px;
-      border-left: 3px solid #FFD700; pointer-events: none; line-height: 1.4;
-      max-width: 50vw;
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 30;
+      color: #FFD700;
+      font-weight: 800;
+      font-size: clamp(12px, 3vw, 16px);
+      text-shadow: 1px 1px 2px #000;
+      text-align: left;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 8px 12px;
+      border-radius: 8px;
+      border-left: 3px solid #FFD700;
+      pointer-events: none;
+      line-height: 1.4;
+      max-width: 58vw;
     }
 
-    /* --- স্কোরবোর্ড (মাঝখানে) --- */
+    /* --- স্কোরবোর্ড (Top Center) --- */
     #ui {
-      position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
-      z-index: 30; display: flex; align-items: center; gap: 10px;
-      color: #fff; font-size: clamp(14px, 3vw, 18px); font-weight: 800;
-      background: #e63946; padding: 6px 15px; border-radius: 20px;
-      border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 35;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #fff;
+      font-size: clamp(13px, 3vw, 18px);
+      font-weight: 800;
+      background: #e63946;
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 2px solid white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
       white-space: nowrap;
     }
-    #muteBtn {
-      border: none; border-radius: 50%; width: 24px; height: 24px;
-      cursor: pointer; font-size: 12px; background: rgba(0,0,0,0.25); color: #fff;
-      display: flex; align-items: center; justify-content: center;
+    #ui .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
+    #muteBtn {
+      border: none;
+      border-radius: 999px;
+      padding: 4px 10px;
+      cursor: pointer;
+      font-weight: 900;
+      background: rgba(0,0,0,0.25);
+      color: #fff;
+    }
+    #muteBtn:active { transform: scale(0.96); }
 
-    /* --- ✅ FIXED: No Boat Badge (Top-Right + Hashtag) --- */
-    #badge-container {
-      position: absolute; top: 10px; right: 10px; z-index: 40;
-      display: flex; flex-direction: column; align-items: center;
-      animation: floatBadge 3s ease-in-out infinite;
+    /* --- ✅ Boat badge: fixed top-right + animated --- */
+    #boat-badge {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 60;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      pointer-events: none; /* টাচ ব্লক করবে না */
+      transform-origin: top right;
+      animation: badgeFloat 2.1s ease-in-out infinite;
+    }
+    @keyframes badgeFloat {
+      0%,100% { transform: translateY(0) scale(1); }
+      50%     { transform: translateY(4px) scale(1.03); }
+    }
+    #boat-badge .frame {
+      position: relative;
+      background: rgba(255,255,255,0.92);
+      border: 2px solid #ff4757;
+      border-radius: 14px;
+      padding: 8px 10px 10px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.35);
+      overflow: hidden;
+    }
+    #boat-badge img {
+      width: clamp(52px, 12vw, 88px);
+      height: auto;
+      display: block;
+      border-radius: 10px;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+      animation: wiggle 3.2s ease-in-out infinite;
+    }
+    @keyframes wiggle {
+      0%,100% { transform: rotate(0deg); }
+      35%     { transform: rotate(-2deg); }
+      70%     { transform: rotate(2deg); }
+    }
+    #boat-badge .cross {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      font-size: 42px;
+      opacity: 0.70;
+      animation: crossPulse 1.1s ease-in-out infinite;
       pointer-events: none;
     }
-    
-    #badge-img-wrapper {
-      position: relative;
-      background: #fff; padding: 4px; border-radius: 50%;
-      border: 3px solid #ff4757;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+    @keyframes crossPulse {
+      0%,100% { transform: scale(1); opacity: 0.55; }
+      50%     { transform: scale(1.06); opacity: 0.85; }
     }
-    
-    #badge-container img {
-      width: clamp(50px, 12vw, 80px); height: clamp(50px, 12vw, 80px);
-      object-fit: cover; border-radius: 50%; display: block;
+    #boat-badge .hashtags {
+      margin-top: 6px;
+      font-size: clamp(10px, 2.4vw, 13px);
+      font-weight: 900;
+      color: #ff4757;
+      background: rgba(0,0,0,0.75);
+      border: 1px solid rgba(255,71,87,0.9);
+      border-radius: 999px;
+      padding: 4px 10px;
+      text-shadow: 1px 1px 2px #000;
+      letter-spacing: 0.3px;
+      animation: glow 1.2s ease-in-out infinite;
+      white-space: nowrap;
     }
-    
-    /* Cross (X) Effect on Image */
-    #badge-img-wrapper::after {
-      content: ""; position: absolute; inset: 0;
-      background: linear-gradient(to bottom right, transparent 45%, red 45%, red 55%, transparent 55%),
-                  linear-gradient(to bottom left, transparent 45%, red 45%, red 55%, transparent 55%);
-      opacity: 0.8; border-radius: 50%;
-    }
-
-    .hashtag-box {
-      margin-top: -10px;
-      background: #d63031; color: #fff;
-      font-size: clamp(9px, 2.5vw, 12px); font-weight: 900;
-      padding: 4px 10px; border-radius: 12px;
-      border: 2px solid #fff;
-      text-transform: uppercase;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-      z-index: 41;
-      text-align: center;
-      line-height: 1.2;
+    @keyframes glow {
+      0%,100% { box-shadow: 0 0 0 rgba(255,71,87,0); transform: scale(1); }
+      50%     { box-shadow: 0 0 18px rgba(255,71,87,0.55); transform: scale(1.03); }
     }
 
-    @keyframes floatBadge {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(8px); }
+    /* mobile: UI/Notch safe-ish */
+    @media (max-width:420px) {
+      #boat-badge { top: 58px; right: 10px; }
     }
 
-    /* --- গেম অবজেক্টস --- */
+    /* --- গোল পোস্ট --- */
     #goal-post {
-      position: absolute; top: 20%; left: 50%; transform: translateX(-50%);
-      font-size: clamp(220px, 55vw, 450px); z-index: 2; opacity: 1; pointer-events: none;
-      filter: drop-shadow(0 10px 10px rgba(0,0,0,0.3)); line-height: 0;
+      position: absolute;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: clamp(220px, 55vw, 450px);
+      z-index: 2;
+      pointer-events: none;
+      filter: drop-shadow(0 10px 10px rgba(0,0,0,0.3));
+      line-height: 0;
     }
 
+    /* --- গোলকিপার --- */
     #keeper-container {
-      position: absolute; top: 38%; left: 50%; transform: translateX(-50%);
-      width: clamp(110px, 24vw, 190px); z-index: 5; pointer-events: none;
+      position: absolute;
+      top: 38%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: clamp(110px, 24vw, 190px);
+      z-index: 5;
+      pointer-events: none;
       transition: transform 0.2s ease-out;
     }
-    #keeper-container img { width: 100%; height: auto; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5)); }
+    #keeper-container img {
+      width: 100%;
+      height: auto;
+      filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5));
+    }
     .keeper-laugh { animation: shake 0.5s infinite; }
     .keeper-cry { animation: bounce 0.4s infinite alternate; }
 
+    /* --- গ্রিট/সালাম ক্যারেক্টার --- */
     #salam-char {
-      position: absolute; bottom: 15%; left: 2%;
-      width: clamp(150px, 30vw, 280px); z-index: 10;
+      position: absolute;
+      bottom: 15%;
+      left: 2%;
+      width: clamp(150px, 30vw, 280px);
+      z-index: 10;
     }
-    #salam-char img { width: 100%; height: auto; filter: drop-shadow(5px 5px 15px rgba(0,0,0,0.6)); }
+    #salam-char img {
+      width: 100%;
+      height: auto;
+      filter: drop-shadow(5px 5px 15px rgba(0,0,0,0.6));
+    }
     .salam-happy { animation: bounce 0.6s infinite alternate; }
 
+    /* --- বক্স/বল কন্টেইনার --- */
     #ball-container {
-      position: absolute; bottom: 8%; left: 50%;
+      position: absolute;
+      bottom: 8%;
+      left: 50%;
       transform: translateX(-50%) rotate(-2deg);
-      display: flex; align-items: center; z-index: 20;
-      transition: left 0.18s ease; will-change: left, transform;
+      display: flex;
+      align-items: center;
+      z-index: 20;
+      transition: left 0.18s ease;
+      will-change: left, transform, opacity;
     }
-    #ball { width: clamp(130px, 25vw, 220px); cursor: pointer; position: relative; }
-    #ball img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.6)); }
+    #ball {
+      width: clamp(130px, 25vw, 220px);
+      height: auto;
+      cursor: pointer;
+      position: relative;
+    }
+    #ball img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 10px 20px rgba(0,0,0,0.6));
+    }
     #static-foot {
-      font-size: clamp(40px, 6vw, 60px); margin-left: 5px; opacity: 0.8;
-      filter: grayscale(0.5); pointer-events: none;
+      font-size: clamp(40px, 6vw, 60px);
+      margin-left: 5px;
+      opacity: 0.8;
+      filter: grayscale(0.5);
+      pointer-events: none;
     }
 
-    .line { position: absolute; bottom: 30%; left: 0; width: 100%; height: 2vh; background: #fff; opacity: 0.6; }
+    /* মাঠের দাগ */
+    .line {
+      position: absolute;
+      bottom: 30%;
+      left: 0;
+      width: 100%;
+      height: 2vh;
+      background: #fff;
+      opacity: 0.6;
+    }
 
+    /* শুট অ্যানিমেশন */
     .ball-goal { animation: shootGoal 0.8s forwards cubic-bezier(0.2, 0.8, 0.2, 1); }
     @keyframes shootGoal {
       0% { transform: translateX(-50%) rotate(-2deg) scale(1); opacity: 1; }
@@ -150,46 +291,105 @@
       100% { bottom: 65%; transform: translateX(-50%) rotate(-360deg) scale(0.3); opacity: 0; }
     }
 
+    /* প্লেয়ারের পা */
     #leg {
-      position: absolute; bottom: -20vh; right: -5vw;
-      font-size: clamp(150px, 35vw, 280px); z-index: 25; pointer-events: none;
-      transition: transform 0.1s ease-out; transform-origin: bottom right;
+      position: absolute;
+      bottom: -20vh;
+      right: -5vw;
+      font-size: clamp(150px, 35vw, 280px);
+      z-index: 25;
+      pointer-events: none;
+      transition: transform 0.1s ease-out;
+      transform-origin: bottom right;
     }
     .leg-kick { transform: rotate(-45deg) translate(-60px, -100px) !important; }
 
+    /* মেসেজ */
     #msg {
-      position: absolute; top: 50%; left: 50%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
       transform: translate(-50%, -50%) scale(0);
-      font-size: clamp(56px, 14vw, 100px); font-weight: 900;
-      z-index: 50; pointer-events: none; opacity: 0;
-      text-shadow: 3px 3px 0 #000; white-space: nowrap;
+      font-size: clamp(56px, 14vw, 100px);
+      font-weight: 900;
+      z-index: 50;
+      pointer-events: none;
+      opacity: 0;
+      text-shadow: 3px 3px 0 #000;
+      white-space: nowrap;
     }
     .msg-goal { color: #FFD700; }
     .msg-miss { color: #ff4757; }
+
     .show-msg { animation: popMsg 1s forwards; }
     @keyframes popMsg {
-      0% { opacity: 0; transform: translate(-50%, -50%) scale(0); }
-      50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+      0%   { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+      50%  { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
       100% { opacity: 0; transform: translate(-50%, -150px) scale(1.5); }
     }
 
+    /* স্টার্ট/গেমওভার ওভারলে */
     #overlay {
-      position: absolute; inset: 0; background: rgba(0,0,0,0.85);
-      display: flex; flex-direction: column; justify-content: center; align-items: center;
-      z-index: 100; text-align: center; padding: 18px;
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      text-align: center;
+      padding: 18px;
     }
-    #overlay h1 { color: white; font-size: clamp(24px, 6vw, 40px); margin-bottom: 16px; }
-    #final-score { display: none; color: #FFD700; font-size: 18px; margin-bottom: 14px; }
-    #overlay .hint { color: #d1d5db; font-size: 12px; margin-top: 14px; opacity: 0.8; }
-    button {
-      padding: 15px 40px; font-size: 20px; border: none; border-radius: 50px;
-      background: linear-gradient(45deg, #FF416C, #FF4B2B); color: white;
-      font-weight: 900; cursor: pointer; box-shadow: 0 5px 15px rgba(255, 75, 43, 0.5);
+    #overlay h1 {
+      color: white;
+      font-size: clamp(24px, 6vw, 40px);
+      margin-bottom: 16px;
+      text-shadow: 0 0 18px rgba(255, 65, 108, 0.55);
     }
-    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    #final-score {
+      display: none;
+      color: #FFD700;
+      font-size: 18px;
+      font-weight: 900;
+      margin: 0 0 14px;
+    }
+    #overlay .hint {
+      color: #d1d5db;
+      font-size: 12px;
+      line-height: 1.4;
+      max-width: 520px;
+      margin-top: 14px;
+      opacity: 0.95;
+    }
 
-    @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
-    @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-15px); } }
+    button {
+      padding: 15px 40px;
+      font-size: 20px;
+      border: none;
+      border-radius: 50px;
+      background: linear-gradient(45deg, #FF416C, #FF4B2B);
+      color: white;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(255, 75, 43, 0.5);
+    }
+    button:active { transform: scale(0.96); }
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+    @keyframes bounce {
+      from { transform: translateY(0); }
+      to { transform: translateY(-15px); }
+    }
   </style>
 </head>
 
@@ -203,6 +403,15 @@
     <source src="FBDownloader.to-4256735371281819-(320kbps).mp3" type="audio/mpeg">
   </audio>
 
+  <div id="boat-badge" aria-hidden="true">
+    <div class="frame">
+      <img src="boat.jpg" alt="Boat Badge" />
+      <div class="cross">❌</div>
+    </div>
+
+    <div class="hashtags">#No_Boat&nbsp;&nbsp;#No_Vote</div>
+  </div>
+
   <div id="game-container">
     <div id="slogan">
       Election Season Mode 😄<br>
@@ -211,16 +420,9 @@
     </div>
 
     <div id="ui">
-      <div>GOAL: <span id="score">0</span></div>
-      <div style="border-left:1px solid #fff; padding-left:10px;">LIFE: <span id="life">⚽⚽⚽</span></div>
-      <button id="muteBtn">🔊</button>
-    </div>
-
-    <div id="badge-container">
-      <div id="badge-img-wrapper">
-        <img src="no_boat.jpg" alt="No Boat">
-      </div>
-      <div class="hashtag-box">#No_Boat #No_Vote</div>
+      <div class="pill">GOALS: <span id="score">0</span></div>
+      <div class="pill">LIFE: <span id="life">⚽⚽⚽</span></div>
+      <button id="muteBtn" title="Mute/Unmute">🔊</button>
     </div>
 
     <div id="goal-post">🥅</div>
@@ -232,7 +434,7 @@
     <div class="line"></div>
 
     <div id="salam-char">
-      <img src="Gemini_Generated_Image_95l72b95l72b95l7.png" alt="Character">
+      <img src="Gemini_Generated_Image_95l72b95l72b95l7.png" alt="Greeting Character">
     </div>
 
     <div id="ball-container">
@@ -249,61 +451,86 @@
       <h1 id="overlay-title">VOTE KHELA PRO</h1>
       <div id="final-score">Final Score: 0</div>
       <button id="startBtn" onclick="startGame()" disabled>লোড হচ্ছে...</button>
-      <div class="hint">টিপ: বামে ক্লিক করলে বামে শট, ডানে ক্লিক করলে ডানে শট।</div>
+      <div class="hint">
+        টিপ: স্ক্রিনের বাম দিকে ট্যাপ করলে বাম কর্নার, ডান দিকে ট্যাপ করলে ডান কর্নার শট হবে।
+      </div>
     </div>
   </div>
 
   <script>
     // --- ফাইলের নাম (Exact) ---
     const keeperDefaultSrc = "defense.png";
-    const keeperLaughSrc = "Gemini_Generated_Image_t3goelt3goelt3go.png"; 
-    const keeperCrySrc = "Gemini_Generated_Image_gzxxk1gzxxk1gzxx.png";
-    const salamSrc = "Gemini_Generated_Image_95l72b95l72b95l7.png";
-    const boxSrc = "box.png";
-    const badgeSrc = "no_boat.jpg";
+    const keeperLaughSrc   = "Gemini_Generated_Image_t3goelt3goelt3go.png";
+    const keeperCrySrc     = "Gemini_Generated_Image_gzxxk1gzxxk1gzxx.png";
+    const salamSrc         = "Gemini_Generated_Image_95l72b95l72b95l7.png";
+    const boxSrc           = "box.png";
+    const boatSrc          = "boat.jpg"; // নতুন বোট ইমেজ
+    const musicSrc         = "FBDownloader.to-4256735371281819-(320kbps).mp3";
 
     // --- এলিমেন্ট ---
     const gameContainer = document.getElementById("game-container");
-    const ballAnim = document.getElementById("ball-container");
-    const leg = document.getElementById("leg");
-    const salam = document.getElementById("salam-char");
-    const keeperImg = document.getElementById("keeper-img");
-    const keeperCont = document.getElementById("keeper-container");
-    const msg = document.getElementById("msg");
-    const scoreEl = document.getElementById("score");
-    const lifeEl = document.getElementById("life");
-    const music = document.getElementById("bg-music");
-    const loader = document.getElementById("loader");
-    const overlay = document.getElementById("overlay");
-    const overlayTitle = document.getElementById("overlay-title");
-    const finalScoreEl = document.getElementById("final-score");
-    const startBtn = document.getElementById("startBtn");
-    const muteBtn = document.getElementById("muteBtn");
+    const ballAnim      = document.getElementById("ball-container");
+    const leg           = document.getElementById("leg");
+    const salam         = document.getElementById("salam-char");
+    const keeperImg     = document.getElementById("keeper-img");
+    const keeperCont    = document.getElementById("keeper-container");
+    const msg           = document.getElementById("msg");
 
-    // Mute Logic
-    muteBtn.addEventListener("click", () => {
+    const scoreEl       = document.getElementById("score");
+    const lifeEl        = document.getElementById("life");
+
+    const music         = document.getElementById("bg-music");
+    const loader        = document.getElementById("loader");
+
+    const overlay       = document.getElementById("overlay");
+    const overlayTitle  = document.getElementById("overlay-title");
+    const finalScoreEl  = document.getElementById("final-score");
+    const startBtn      = document.getElementById("startBtn");
+
+    // --- UI: mute ---
+    const muteBtn = document.getElementById("muteBtn");
+    muteBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
       music.muted = !music.muted;
       muteBtn.textContent = music.muted ? "🔇" : "🔊";
     });
 
-    const state = { score: 0, lives: 3, isKicking: false, active: false };
+    // --- গেম স্টেট ---
+    const state = {
+      score: 0,
+      lives: 3,
+      isKicking: false,
+      active: false
+    };
+
     let assetsReady = false;
 
     // --- Preloader ---
-    const assets = [keeperDefaultSrc, keeperLaughSrc, keeperCrySrc, salamSrc, boxSrc, badgeSrc];
+    const assets = [
+      keeperDefaultSrc,
+      keeperLaughSrc,
+      keeperCrySrc,
+      salamSrc,
+      boxSrc,
+      boatSrc
+    ];
+
+    function setLoaderText(text) {
+      const t = document.getElementById("loading-text");
+      if (t) t.textContent = text;
+    }
 
     function preloadImages(list) {
       let loaded = 0;
       const total = list.length;
+
       return new Promise((resolve) => {
         if (total === 0) resolve();
         list.forEach((src) => {
           const img = new Image();
           img.onload = img.onerror = () => {
             loaded++;
-            if (document.getElementById("loading-text")) {
-                document.getElementById("loading-text").innerText = `ছবি লোড হচ্ছে... (${loaded}/${total})`;
-            }
+            setLoaderText(`ছবি লোড হচ্ছে... (${loaded}/${total})`);
             if (loaded >= total) resolve();
           };
           img.src = src;
@@ -312,12 +539,16 @@
     }
 
     async function boot() {
-      await preloadImages(assets);
-      assetsReady = true;
-      loader.style.opacity = "0";
-      setTimeout(() => { loader.style.display = "none"; }, 500);
-      startBtn.disabled = false;
-      startBtn.textContent = "ম্যাচ শুরু ▶";
+      try {
+        await preloadImages(assets);
+      } finally {
+        assetsReady = true;
+        loader.style.opacity = "0";
+        setTimeout(() => { loader.style.display = "none"; }, 500);
+
+        startBtn.disabled = false;
+        startBtn.textContent = "ম্যাচ শুরু ▶";
+      }
     }
 
     window.addEventListener("load", boot);
@@ -329,65 +560,98 @@
 
     function startGame() {
       if (!assetsReady) return;
+
       overlayTitle.textContent = "VOTE KHELA PRO";
       finalScoreEl.style.display = "none";
+      finalScoreEl.textContent = "Final Score: 0";
       overlay.style.display = "none";
 
-      state.score = 0; state.lives = 3;
-      state.isKicking = false; state.active = true;
+      state.score = 0;
+      state.lives = 3;
+      state.isKicking = false;
+      state.active = true;
       updateUI();
 
       music.volume = 0.5;
-      music.play().catch(() => {});
-      
+      music.play().catch(() => { /* autoplay blocked */ });
+
       gameContainer.onpointerdown = handleInput;
       resetRound(true);
     }
 
+    // startBtn listener
+    startBtn.onclick = startGame;
+
     function handleInput(e) {
       if (!state.active || state.isKicking) return;
-      if (e.target.id === "muteBtn" || e.target.closest('#badge-container')) return;
+      // ignore mute or badge clicks
+      if (e.target && (e.target.id === "muteBtn" || e.target.closest('#boat-badge'))) return;
 
       const x = (typeof e.clientX === "number") ? e.clientX : window.innerWidth / 2;
-      const aim = x < (window.innerWidth / 2) ? "left" : "right";
+      const screenMiddle = window.innerWidth / 2;
+      const aim = x < screenMiddle ? "left" : "right";
+
       kickBall(aim);
     }
 
     function kickBall(aim) {
       state.isKicking = true;
-      const keeperDive = Math.random() < 0.5 ? "left" : "right";
-      
-      const level = Math.min(10, Math.floor(state.score / 3));
-      let goalChance = (aim !== keeperDive) ? (0.90 - level * 0.03) : (0.30 - level * 0.01);
-      const isGoal = Math.random() < Math.max(0.15, Math.min(0.92, goalChance));
 
+      // Keeper AI
+      const keeperDive = Math.random() < 0.5 ? "left" : "right";
+
+      // Difficulty scaling
+      const level = Math.min(10, Math.floor(state.score / 3));
+
+      // Goal chance
+      let goalChance = (aim !== keeperDive) ? (0.90 - level * 0.03) : (0.30 - level * 0.01);
+      goalChance = Math.max(0.15, Math.min(0.92, goalChance));
+
+      const isGoal = Math.random() < goalChance;
+
+      // kick animation
       leg.classList.add("leg-kick");
 
       setTimeout(() => {
         leg.classList.remove("leg-kick");
+
+        // keeper dive
         const moveX = keeperDive === "left" ? -50 : 50;
         keeperCont.style.transform = `translateX(calc(-50% + ${moveX}px))`;
+
+        // aim ball
         ballAnim.style.left = aim === "left" ? "40%" : "60%";
+
+        // cleanup msg
         msg.classList.remove("msg-goal", "msg-miss", "show-msg");
 
         if (isGoal) {
           ballAnim.classList.add("ball-goal");
+
           msg.textContent = "GOAL!";
           msg.classList.add("msg-goal");
+
           setTimeout(() => {
-            state.score++; updateUI();
+            state.score++;
+            updateUI();
+
             msg.classList.add("show-msg");
             salam.classList.add("salam-happy");
+
             keeperImg.src = keeperCrySrc;
             keeperCont.classList.add("keeper-cry");
           }, 450);
         } else {
           ballAnim.style.left = aim === "left" ? "25%" : "75%";
           ballAnim.classList.add("ball-miss");
+
           const isSaved = (aim === keeperDive) && !isGoal;
           msg.textContent = isSaved ? "SAVED!" : "MISS!";
           msg.classList.add("msg-miss");
-          state.lives--; updateUI();
+
+          state.lives--;
+          updateUI();
+
           setTimeout(() => {
             msg.classList.add("show-msg");
             keeperImg.src = keeperLaughSrc;
@@ -399,43 +663,50 @@
           if (state.lives <= 0) gameOver();
           else resetRound(false);
         }, 1800);
+
       }, 150);
     }
 
     function resetRound(hardReset) {
       ballAnim.classList.remove("ball-goal", "ball-miss");
       ballAnim.style.left = "50%";
+
       msg.classList.remove("show-msg", "msg-goal", "msg-miss");
+
       salam.classList.remove("salam-happy");
+
       keeperCont.classList.remove("keeper-laugh", "keeper-cry");
       keeperCont.style.transform = "translateX(-50%)";
-      
-      // নিউট্রাল পজিশনে ফেরত
       keeperImg.src = keeperDefaultSrc;
-      
+
       state.isKicking = false;
-      if (hardReset) startBtn.textContent = "ম্যাচ শুরু ▶";
+
+      if (hardReset) {
+        startBtn.textContent = "ম্যাচ শুরু ▶";
+      }
     }
 
     function gameOver() {
-      state.active = false; state.isKicking = false;
-      music.pause(); music.currentTime = 0;
+      state.active = false;
+      state.isKicking = false;
+
+      music.pause();
+      music.currentTime = 0;
+
       overlayTitle.textContent = "GAME OVER";
       finalScoreEl.textContent = `Final Score: ${state.score}`;
       finalScoreEl.style.display = "block";
+
       startBtn.textContent = "Play Again 🔄";
-      startBtn.disabled = false;
       
-      // রিস্টার্ট বাটনের জন্য অনক্লিক ঠিক করা
+      // Ensure restart handler works
       startBtn.onclick = () => {
+        startBtn.onclick = startGame; 
         startGame();
       };
-      
+
       overlay.style.display = "flex";
     }
-    
-    // ইনিশিয়াল বাইন্ডিং
-    startBtn.onclick = startGame;
   </script>
 </body>
 </html>

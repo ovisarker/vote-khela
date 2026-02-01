@@ -202,10 +202,9 @@
       box-shadow: 0 5px 15px rgba(0,0,0,0.3); width: 100%;
     }
     #startBtn { background: linear-gradient(45deg, #FF416C, #FF4B2B); }
-    /* ✅ শেয়ার বাটন স্টাইল */
     #shareBtn {
       background: linear-gradient(45deg, #1877F2, #165EAB);
-      display: none; /* ডিফল্ট হাইড */
+      display: none; 
     }
     button:disabled { opacity: 0.5; cursor: not-allowed; }
 
@@ -223,14 +222,17 @@
 
   <canvas id="confetti-canvas"></canvas>
 
+  <audio id="bg-music" loop preload="auto"><source src="FBDownloader.to-4256735371281819-(320kbps).mp3" type="audio/mpeg"></audio>
+  
+  <audio id="sfx-kick" preload="auto"><source src="kick.mp3" type="audio/mpeg"></audio>
+  <audio id="sfx-goal" preload="auto"><source src="goal.mp3" type="audio/mpeg"></audio>
+  <audio id="sfx-miss" preload="auto"><source src="miss.mp3" type="audio/mpeg"></audio>
+  <audio id="sfx-click" preload="auto"><source src="click.mp3" type="audio/mpeg"></audio>
+
   <div id="intro-layer">
     <img src="intro.jpg" alt="Notice">
     <button id="intro-btn" type="button">CONTINUE ▶</button>
   </div>
-
-  <audio id="bg-music" loop preload="auto">
-    <source src="FBDownloader.to-4256735371281819-(320kbps).mp3" type="audio/mpeg">
-  </audio>
 
   <div id="boat-group-right" aria-hidden="true">
     <img src="boat.png" alt="Boat">
@@ -266,7 +268,7 @@
 
     <div id="ball-container">
       <div id="ball">
-        <img src="box.png" alt="Box">
+        <img id="ball-img" src="box.png" alt="Box">
       </div>
     </div>
 
@@ -287,11 +289,14 @@
   </div>
 
   <script>
+    // --- অ্যাসেট লিস্ট ---
     const keeperDefaultSrc = "defense.png";
     const keeperLaughSrc   = "laugh.png";
     const keeperCrySrc     = "cry.png";
+    
     const salamSrc         = "salam.png";
     const noSalamSrc       = "no_salam.png";
+    
     const boxSrc           = "box.png";
     const boatSrc          = "boat.png";
     const introSrc         = "intro.jpg";
@@ -305,7 +310,14 @@
     const msg           = document.getElementById("msg");
     const scoreEl       = document.getElementById("score");
     const lifeEl        = document.getElementById("life");
+    
+    // Audio Elements
     const music         = document.getElementById("bg-music");
+    const sfxKick       = document.getElementById("sfx-kick");
+    const sfxGoal       = document.getElementById("sfx-goal");
+    const sfxMiss       = document.getElementById("sfx-miss");
+    const sfxClick      = document.getElementById("sfx-click");
+
     const loader        = document.getElementById("loader");
     const introLayer    = document.getElementById("intro-layer");
     const introBtn      = document.getElementById("intro-btn");
@@ -323,16 +335,22 @@
     let bestScore = parseInt(localStorage.getItem('vp_best')) || 0;
     let assetsReady = false;
 
+    // --- SOUND HELPER ---
+    function playSfx(audio) {
+      if(!music.muted) {
+        audio.currentTime = 0;
+        audio.play().catch(()=>{});
+      }
+    }
+
     // --- SWIPE LOGIC ---
     let touchStartX = 0;
     
-    // Touch Start
     gameContainer.addEventListener('touchstart', (e) => {
         if(!state.active || state.isKicking) return;
         touchStartX = e.touches[0].clientX;
     }, {passive: false});
 
-    // Touch End (Detect Swipe or Tap)
     gameContainer.addEventListener('touchend', (e) => {
         if(!state.active || state.isKicking) return;
         if(e.target && e.target.id === "muteBtn") return;
@@ -340,23 +358,17 @@
         let touchEndX = e.changedTouches[0].clientX;
         let diffX = touchEndX - touchStartX;
 
-        // যদি ৩০px এর বেশি মুভ হয় = Swipe
         if(Math.abs(diffX) > 30) {
             kickBall(diffX < 0 ? "left" : "right");
         } else {
-            // নতুবা Tap হিসেবে গণ্য হবে
             const screenMiddle = window.innerWidth / 2;
-            const aim = touchEndX < screenMiddle ? "left" : "right";
-            kickBall(aim);
+            kickBall(touchEndX < screenMiddle ? "left" : "right");
         }
     }, {passive: false});
 
-    // Mouse Click (Desktop Fallback)
     gameContainer.addEventListener('mousedown', (e) => {
         if(!state.active || state.isKicking) return;
         if(e.target && e.target.id === "muteBtn") return;
-        
-        // মাউস দিয়ে সোয়াইপ এমুলেট না করে সিম্পল ক্লিক রাখা হলো
         const x = e.clientX;
         const screenMiddle = window.innerWidth / 2;
         kickBall(x < screenMiddle ? "left" : "right");
@@ -366,15 +378,17 @@
       e.stopPropagation();
       music.muted = !music.muted;
       muteBtn.textContent = music.muted ? "🔇" : "🔊";
+      playSfx(sfxClick);
     });
 
-    // ✅ শেয়ার বাটন লজিক
     shareBtn.addEventListener("click", () => {
+        playSfx(sfxClick);
         const text = `আমি Vote Penalty গেমসে ${state.score} গোল দিয়েছি! আপনি পারবেন আমার রেকর্ড ভাঙতে?`;
         const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}&quote=${encodeURIComponent(text)}`;
         window.open(url, '_blank');
     });
 
+    // Check Assets
     const assets = [introSrc, keeperDefaultSrc, keeperLaughSrc, keeperCrySrc, salamSrc, noSalamSrc, boxSrc, boatSrc];
 
     function preloadImages(list) {
@@ -405,6 +419,7 @@
     window.addEventListener("load", boot);
 
     function closeIntro() {
+      playSfx(sfxClick);
       introLayer.style.opacity = "0";
       introLayer.style.pointerEvents = "none";
       setTimeout(() => {
@@ -421,6 +436,8 @@
 
     function startGame() {
       if (!assetsReady) return;
+      playSfx(sfxClick);
+      
       overlayTitle.textContent = "VOTE KHELA PRO";
       finalScoreEl.style.display = "none";
       bestScoreEl.style.display = "none";
@@ -441,6 +458,8 @@
 
     function kickBall(aim) {
       state.isKicking = true;
+      playSfx(sfxKick); // Play Kick Sound
+
       const keeperDive = Math.random() < 0.5 ? "left" : "right";
       
       const level = Math.min(10, Math.floor(state.score / 3));
@@ -458,12 +477,16 @@
           ballAnim.classList.add("ball-goal");
           msg.textContent = "GOAL!";
           msg.classList.add("msg-goal", "show-msg");
-          fireConfetti(); // ✅ কনফেটি চালু হবে
+          
+          playSfx(sfxGoal); // Play Goal Sound
+          fireConfetti();
           
           setTimeout(() => {
             state.score++; updateUI();
+            
             salamImg.src = salamSrc; 
             salamDiv.classList.add("salam-happy");
+            
             keeperImg.src = keeperCrySrc;
             keeperCont.classList.add("keeper-cry");
           }, 450);
@@ -471,6 +494,8 @@
           ballAnim.style.left = aim === "left" ? "25%" : "75%";
           ballAnim.classList.add("ball-miss");
           
+          playSfx(sfxMiss); // Play Miss Sound
+
           const isSaved = (aim === keeperDive);
           msg.textContent = isSaved ? "SAVED!" : "MISS!";
           msg.classList.add("msg-miss", "show-msg");
@@ -479,6 +504,7 @@
           setTimeout(() => {
             salamDiv.classList.remove("salam-happy");
             salamImg.src = noSalamSrc;
+            
             keeperImg.src = keeperLaughSrc;
             keeperCont.classList.add("keeper-laugh");
           }, 450);
@@ -502,6 +528,7 @@
       keeperCont.classList.remove("keeper-laugh", "keeper-cry");
       keeperCont.style.transform = "translateX(-50%)";
       keeperImg.src = keeperDefaultSrc;
+      
       state.isKicking = false;
       if (hardReset) startBtn.textContent = "ম্যাচ শুরু ▶";
     }
@@ -523,7 +550,7 @@
       
       finalScoreEl.style.display = "block";
       bestScoreEl.style.display = "block";
-      shareBtn.style.display = "block"; // ✅ শেয়ার বাটন দেখাবে
+      shareBtn.style.display = "block";
 
       startBtn.textContent = "Play Again 🔄";
       startBtn.onclick = () => {
@@ -533,7 +560,7 @@
       overlay.style.display = "flex";
     }
 
-    // --- Simple Confetti Implementation ---
+    // --- Confetti ---
     let particles = [];
     function fireConfetti() {
         for(let i=0; i<30; i++) {
@@ -557,7 +584,7 @@
             let p = particles[i];
             p.x += p.vx;
             p.y += p.vy;
-            p.vy += 0.2; // Gravity
+            p.vy += 0.2;
             p.life--;
             ctx.fillStyle = p.color;
             ctx.fillRect(p.x, p.y, 8, 8);

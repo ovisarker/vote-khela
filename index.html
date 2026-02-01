@@ -55,9 +55,58 @@
     }
     @keyframes pulseBtn { 0%,100%{transform:scale(1);} 50%{transform:scale(1.05);} }
 
-    /* --- UI --- */
+    /* --- ✅ NEW: Animated boat.png (Top-Left, No Cross) --- */
+    #boat-top-left {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      z-index: 65;
+      pointer-events: none; /* গেমের টাচ আটকাবে না */
+      transform-origin: top left;
+      animation: boatFloat 2.5s ease-in-out infinite;
+      filter: drop-shadow(0 8px 12px rgba(0,0,0,0.3));
+    }
+    #boat-top-left img {
+      width: clamp(50px, 12vw, 90px);
+      height: auto;
+      display: block;
+      border-radius: 10px; /* হালকা রাউন্ডেড কর্নার */
+      animation: boatWiggle 3.5s ease-in-out infinite;
+    }
+    @keyframes boatFloat {
+      0%,100% { transform: translateY(0); }
+      50%     { transform: translateY(6px); }
+    }
+    @keyframes boatWiggle {
+      0%,100% { transform: rotate(0deg); }
+      33%     { transform: rotate(-3deg); }
+      66%     { transform: rotate(3deg); }
+    }
+
+    /* --- স্লোগান (বামে, বোটের পাশে) --- */
+    #slogan {
+      position: absolute;
+      top: 18px;
+      left: clamp(70px, 15vw, 120px); /* বোটের জন্য জায়গা ছাড়া হয়েছে */
+      z-index: 30;
+      color: #FFD700;
+      font-weight: 800;
+      font-size: clamp(12px, 3vw, 18px);
+      text-shadow: 1px 1px 2px #000;
+      text-align: left;
+      background: rgba(0, 0, 0, 0.65);
+      padding: 8px 15px;
+      border-radius: 8px;
+      border-left: 4px solid #FFD700;
+      pointer-events: none;
+      line-height: 1.5;
+      max-width: 60vw;
+      white-space: pre-line;
+    }
+
+    /* --- UI (Top Right/Center) --- */
     #ui {
-      position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+      position: absolute; top: 10px; right: 10px; /* ডানদিকে সরানো হয়েছে */
       z-index: 35; display: flex; align-items: center; gap: 10px;
       color: #fff; font-size: clamp(13px, 3vw, 18px); font-weight: 800;
       background: #e63946; padding: 6px 15px; border-radius: 20px;
@@ -69,46 +118,6 @@
       border: none; border-radius: 999px; padding: 4px 10px;
       cursor: pointer; font-weight: 900;
       background: rgba(0,0,0,0.25); color: #fff;
-    }
-
-    /* --- Badge (Moved to Top Left, Cross Removed) --- */
-    #badge-container {
-      position: fixed;
-      top: 15px; /* Adjusted for top-left */
-      left: 15px; /* Moved to left */
-      z-index: 60;
-      display: flex; flex-direction: column; align-items: center;
-      animation: floatBadge 3s ease-in-out infinite;
-      pointer-events: none;
-      transform-origin: top left; /* Changed origin */
-    }
-    @keyframes floatBadge { 0%,100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
-
-    #badge-img-wrapper {
-      position: relative;
-      background: #fff; padding: 4px; border-radius: 50%;
-      border: 3px solid #ff4757;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.4);
-      overflow: hidden;
-    }
-    #badge-container img {
-      width: clamp(50px, 12vw, 80px); height: clamp(50px, 12vw, 80px);
-      object-fit: cover; border-radius: 50%; display: block;
-      animation: wiggle 3.2s ease-in-out infinite;
-    }
-    @keyframes wiggle { 0%,100%{ transform: rotate(0deg);} 35%{ transform: rotate(-2deg);} 70%{ transform: rotate(2deg);} }
-
-    /* Cross (X) effect removed here based on request */
-
-    .hashtag-box {
-      margin-top: -10px;
-      background: #d63031; color: #fff;
-      font-size: clamp(9px, 2.5vw, 12px); font-weight: 900;
-      padding: 4px 10px; border-radius: 12px;
-      border: 2px solid #fff;
-      text-transform: uppercase;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-      text-align: center; line-height: 1.2; white-space: nowrap;
     }
 
     /* --- গেম অবজেক্টস --- */
@@ -200,10 +209,6 @@
 
     @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
     @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-15px); } }
-
-    @media (max-width: 420px) {
-      #badge-container { top: 58px; left: 15px; right: auto; } /* Adjusted for mobile left */
-    }
   </style>
 </head>
 
@@ -222,14 +227,17 @@
     <source src="FBDownloader.to-4256735371281819-(320kbps).mp3" type="audio/mpeg">
   </audio>
 
-  <div id="badge-container" aria-hidden="true">
-    <div id="badge-img-wrapper">
-      <img src="boat.png" alt="Boat Badge" />
-    </div>
-    <div class="hashtag-box">#No_Boat&nbsp;&nbsp;#No_Vote</div>
+  <div id="boat-top-left" aria-hidden="true">
+    <img src="boat.png" alt="Boat">
   </div>
 
   <div id="game-container">
+    <div id="slogan">
+      Satire Mode 😄
+      Greeting Poster এ টাচ নয়,
+      Box এ ট্যাপ = GOAL!
+    </div>
+
     <div id="ui">
       <div class="pill">GOALS: <span id="score">0</span></div>
       <div class="pill">LIFE: <span id="life">⚽⚽⚽</span></div>
@@ -273,7 +281,7 @@
     const keeperCrySrc     = "Gemini_Generated_Image_gzxxk1gzxxk1gzxx.png";
     const salamSrc         = "Gemini_Generated_Image_95l72b95l72b95l7.png";
     const boxSrc           = "box.png";
-    const badgeSrc         = "boat.png";
+    const badgeSrc         = "boat.png"; // New Boat Image
     const introSrc         = "intro.jpg";
 
     // --- এলিমেন্ট ---
@@ -346,18 +354,21 @@
 
       // লোড শেষ হলে ইন্ট্রো দেখাও
       introLayer.style.display = "flex";
+      introLayer.style.opacity = "1";
+      introLayer.style.pointerEvents = "auto";
       startBtn.disabled = false;
     }
+
     window.addEventListener("load", boot);
 
     // --- Intro Close Function ---
     function closeIntro() {
-        introLayer.style.opacity = "0";
-        introLayer.style.pointerEvents = "none";
-        setTimeout(() => {
-            introLayer.style.display = "none";
-            overlay.style.display = "flex";
-        }, 500);
+      introLayer.style.opacity = "0";
+      introLayer.style.pointerEvents = "none";
+      setTimeout(() => {
+        introLayer.style.display = "none";
+        overlay.style.display = "flex";
+      }, 500);
     }
     introBtn.onclick = closeIntro;
 
@@ -391,7 +402,7 @@
 
     function handleInput(e) {
       if (!state.active || state.isKicking) return;
-      if (e.target && (e.target.id === "muteBtn" || e.target.closest('#badge-container'))) return;
+      if (e.target && e.target.id === "muteBtn") return; // Boat is non-clickable now
 
       const x = (typeof e.clientX === "number") ? e.clientX : window.innerWidth / 2;
       const aim = x < (window.innerWidth / 2) ? "left" : "right";
@@ -480,9 +491,9 @@
       finalScoreEl.style.display = "block";
 
       startBtn.textContent = "Play Again 🔄";
-      
+
       startBtn.onclick = () => {
-        startBtn.onclick = startGame; 
+        startBtn.onclick = startGame;
         startGame();
       };
       overlay.style.display = "flex";

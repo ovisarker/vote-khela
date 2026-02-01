@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salam Nin, Box e Latthi Din</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #222; font-family: 'Arial', sans-serif; touch-action: none; }
+        #game-container { position: relative; width: 100vw; height: 100vh; background: linear-gradient(to bottom, #2c3e50, #000000); overflow: hidden; }
+        
+        /* স্কোরবোর্ড */
+        #ui-layer { position: absolute; top: 10px; left: 10px; color: yellow; z-index: 10; font-size: 20px; font-weight: bold; pointer-events: none; text-shadow: 2px 2px #000; }
+        
+        /* ছবি এবং বক্সের স্টাইল */
+        .game-object {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.1s;
+        }
+
+        .game-object img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5));
+        }
+
+        /* লাথির এনিমেশন */
+        .kick-effect {
+            position: absolute;
+            font-size: 30px;
+            color: #f1c40f;
+            font-weight: bold;
+            pointer-events: none;
+            animation: popUp 0.5s forwards;
+            text-shadow: 2px 2px red;
+            z-index: 15;
+        }
+
+        @keyframes popUp {
+            0% { transform: scale(0.5); opacity: 1; }
+            100% { transform: scale(1.5) translateY(-50px); opacity: 0; }
+        }
+
+        /* মেনু এবং গেম ওভার স্ক্রিন */
+        .overlay {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            text-align: center;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+            z-index: 20;
+            width: 85%;
+            max-width: 400px;
+        }
+        button { padding: 12px 25px; background: #d35400; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 18px; margin-top: 15px; font-weight: bold; }
+        button:hover { background: #e67e22; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<audio id="bg-music" loop>
+    <source src="music.mp3" type="audio/mpeg">
+</audio>
+
+<div id="game-container">
+    <div id="ui-layer">
+        Points: <span id="score">0</span> <br>
+        Life: <span id="life">❤️❤️❤️</span>
+    </div>
+
+    <div id="start-screen" class="overlay">
+        <h2 style="color: #2c3e50;">সালাম নিন,<br>বক্সে লাথি দিন! 🦵</h2>
+        <p>🗳️ <b>ব্যালট বক্স:</b> দেখলেই লাথি (ক্লিক) দিন।</p>
+        <p>👩‍💼 <b>সালাম:</b> সালাম দিলে <span style="color:red">লাথি মারবেন না!</span> (ইগনোর করুন)</p>
+        <button onclick="startGame()">খেলা শুরু 🎵</button>
+    </div>
+    
+    <div id="game-over" class="overlay hidden">
+        <h2 style="color: red;">খেলা শেষ!</h2>
+        <p id="game-over-msg"></p>
+        <h3>আপনার স্কোর: <span id="final-score">0</span></h3>
+        <button onclick="location.reload()">আবার খেলুন 🔄</button>
+    </div>
+</div>
+
+<script>
+    const container = document.getElementById('game-container');
+    const scoreEl = document.getElementById('score');
+    const lifeEl = document.getElementById('life');
+    const gameOverScreen = document.getElementById('game-over');
+    const startScreen = document.getElementById('start-screen');
+    const bgMusic = document.getElementById('bg-music');
+
+    let score = 0;
+    let lives = 3;
+    let gameActive = false;
+
+    function startGame() {
+        startScreen.classList.add('hidden');
+        gameActive = true;
+        bgMusic.volume = 0.5; 
+        bgMusic.play().catch(e => console.log("Audio requires interaction"));
+        spawnObject();
+    }
+
+    function spawnObject() {
+        if (!gameActive) return;
+
+        const obj = document.createElement('div');
+        obj.classList.add('game-object');
+        
+        // ৩০% চান্স সালাম আসার, ৭০% চান্স বক্স আসার
+        let isSalam = Math.random() < 0.3; 
+
+        if (isSalam) {
+            // সালাম ইমেজ
+            obj.innerHTML = '<img src="salam.png" alt="Salam">';
+            obj.setAttribute('data-type', 'salam');
+        } else {
+            // বক্স ইমেজ
+            obj.innerHTML = '<img src="box.png" alt="Box">';
+            obj.setAttribute('data-type', 'box');
+        }
+
+        // পজিশন সেট করা
+        const xPos = Math.random() * (window.innerWidth - 80);
+        obj.style.left = xPos + 'px';
+        obj.style.top = '-80px';
+
+        // ক্লিক ইভেন্ট (কম্পিউটার ও মোবাইল)
+        obj.addEventListener('mousedown', () => handleClick(obj, isSalam));
+        obj.addEventListener('touchstart', (e) => { e.preventDefault(); handleClick(obj, isSalam); });
+
+        container.appendChild(obj);
+
+        // নিচে পড়ার লজিক
+        let speed = 3 + (score / 15); 
+        let fallInterval = setInterval(() => {
+            if (!gameActive) { clearInterval(fallInterval); return; }
+
+            let currentTop = parseFloat(obj.style.top);
+            
+            if (currentTop > window.innerHeight) {
+                clearInterval(fallInterval);
+                obj.remove();
+                
+                // বক্স মিস করলে লাইফ যাবে
+                if (!isSalam) {
+                    loseLife("ব্যালট বক্স মিস হয়েছে!");
+                }
+            } else {
+                obj.style.top = (currentTop + speed) + 'px';
+            }
+        }, 20);
+
+        let nextTime = Math.max(400, 1000 - (score * 10));
+        setTimeout(spawnObject, nextTime);
+    }
+
+    function handleClick(element, isSalam) {
+        if (!gameActive) return;
+
+        if (isSalam) {
+            // সালামে লাথি মারা যাবে না
+            showEffect(element.style.left, element.style.top, "❌ Oups!");
+            endGame("ছি ছি! সালামে লাথি মারলেন? <br>(সালাম নিতে হয়, মারা যায় না)");
+        } else {
+            // বক্সে লাথি
+            score++;
+            scoreEl.innerText = score;
+            showEffect(element.style.left, element.style.top, "🦵 Kick!");
+            element.remove();
+        }
+    }
+
+    function showEffect(x, y, text) {
+        const effect = document.createElement('div');
+        effect.classList.add('kick-effect');
+        effect.innerHTML = text;
+        effect.style.left = x;
+        effect.style.top = y;
+        container.appendChild(effect);
+        setTimeout(() => effect.remove(), 500);
+    }
+
+    function loseLife(reason) {
+        lives--;
+        updateLifeUI();
+        if (lives <= 0) {
+            endGame("ভোট কেন্দ্র দখল হয়ে গেছে! <br>(" + reason + ")");
+        }
+    }
+
+    function updateLifeUI() {
+        let h = "";
+        for(let i=0; i<lives; i++) h += "❤️";
+        lifeEl.innerText = h;
+    }
+
+    function endGame(msg) {
+        gameActive = false;
+        bgMusic.pause();
+        document.getElementById('final-score').innerText = score;
+        document.getElementById('game-over-msg').innerHTML = msg;
+        gameOverScreen.classList.remove('hidden');
+    }
+</script>
+
+</body>
+</html>

@@ -3,129 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Vote Penalty: Salam Edition</title>
+    <title>Vote Penalty: Ultimate Edition</title>
     <style>
-        /* --- গেমের ডিজাইন --- */
+        /* --- গেমের ডিজাইন ও অপ্টিমাইজেশন --- */
         body { margin: 0; overflow: hidden; background: #000; font-family: 'Arial', sans-serif; touch-action: none; }
         
-        /* স্টেডিয়াম ব্যাকগ্রাউন্ড */
         #game-container {
             position: relative; width: 100vw; height: 100vh;
             background: linear-gradient(to bottom, #56ab2f, #a8e063); 
             overflow: hidden;
         }
         
-        /* মাঠের সাদা দাগ */
-        .line {
-            position: absolute; bottom: 35%; left: 0; width: 100%; height: 8px;
-            background: rgba(255,255,255,0.7);
-        }
+        /* মাঠের দাগ */
+        .line { position: absolute; bottom: 30%; left: 0; width: 100%; height: 8px; background: rgba(255,255,255,0.7); }
         .box-area {
-            position: absolute; bottom: 35%; left: 50%; transform: translateX(-50%);
-            width: 70%; height: 120px; border: 6px solid rgba(255,255,255,0.7); border-top: none;
+            position: absolute; bottom: 30%; left: 50%; transform: translateX(-50%);
+            width: 80%; height: 15vh; border: 6px solid rgba(255,255,255,0.7); border-top: none;
+        }
+
+        /* --- স্লোগান (নতুন) --- */
+        #slogan {
+            position: absolute; top: 15px; left: 15px; z-index: 25;
+            color: #ffdd59; font-weight: bold; font-size: clamp(14px, 2.5vw, 20px);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            background: rgba(0, 100, 0, 0.6); padding: 10px; border-radius: 10px;
+            border: 2px solid #ffdd59;
+            white-space: pre-line; /* লাইন ব্রেক সাপোর্ট করার জন্য */
         }
 
         /* স্কোরবোর্ড */
         #ui {
-            position: absolute; top: 20px; right: 20px; z-index: 20;
-            color: #fff; font-size: 24px; font-weight: bold;
+            position: absolute; top: 15px; right: 15px; z-index: 25;
+            color: #fff; font-size: clamp(18px, 3vw, 24px); font-weight: bold;
             background: rgba(0,0,0,0.5); padding: 10px 25px; border-radius: 50px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3); border: 2px solid rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.2);
         }
 
-        /* গোল পোস্ট (ইমোজি) */
+        /* --- গোল পোস্ট (অনেক বড় করা হয়েছে) --- */
         #goal-post {
-            position: absolute; top: 8%; left: 50%;
+            position: absolute; top: 5%; left: 50%;
             transform: translateX(-50%);
-            font-size: 160px; z-index: 1; opacity: 0.9;
-            pointer-events: none; filter: drop-shadow(0 10px 10px rgba(0,0,0,0.4));
+            font-size: clamp(150px, 35vw, 300px); /* রেসপন্সিভ বড় সাইজ */
+            z-index: 1; opacity: 0.9; pointer-events: none;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4));
         }
 
-        /* --- সালাম ইমেজ (আপনার ফাইলের নাম salam.png) --- */
+        /* --- গোলকিপার (নতুন) --- */
+        #keeper-container {
+            position: absolute; top: 20%; left: 50%; transform: translateX(-50%);
+            width: clamp(100px, 18vw, 180px); z-index: 4;
+            pointer-events: none; transition: all 0.3s;
+        }
+        #keeper-container img { width: 100%; height: auto; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5)); }
+        
+        .keeper-laugh { animation: shake 0.5s infinite; }
+        .keeper-cry { filter: hue-rotate(180deg) !important; animation: bounce 0.5s infinite alternate; }
+
+        /* --- সালাম ইমেজ (বড় সাইজ) --- */
         #salam-char {
-            position: absolute; 
-            bottom: 32%; 
-            left: 5%;    
-            width: 150px; 
-            z-index: 5;
-            transition: transform 0.2s ease;
+            position: absolute; bottom: 28%; left: 2%;
+            width: clamp(140px, 22vw, 250px); /* রেসপন্সিভ বড় সাইজ */
+            z-index: 5; transition: transform 0.2s ease;
         }
         #salam-char img { 
             width: 100%; height: auto; 
-            filter: drop-shadow(5px 10px 15px rgba(0,0,0,0.5)); 
+            filter: drop-shadow(5px 10px 15px rgba(0,0,0,0.5));
         }
+        .salam-happy { animation: bounce 0.6s infinite alternate; }
 
-        /* সালাম এনিমেশন */
-        .salam-happy {
-            animation: bounce 0.6s infinite alternate;
+        /* --- ব্যালট বক্স কনটেইনার (পেনাল্টি পজিশন ও বড় সাইজ) --- */
+        #ball-container {
+            position: absolute; bottom: 10%; left: 45%; /* একটু বামে চাপানো (মিক্সড সাইড) */
+            transform: rotate(-5deg); /* হালকা বাঁকানো */
+            display: flex; align-items: center; z-index: 10;
         }
-        @keyframes bounce {
-            from { transform: translateY(0) scale(1); }
-            to { transform: translateY(-30px) scale(1.1); }
-        }
-
-        /* --- ব্যালট বক্স (বল) - ফাইলের নাম box.png --- */
+        /* আসল বক্সটি */
         #ball {
-            position: absolute; bottom: 12%; left: 50%;
-            transform: translateX(-50%);
-            width: 110px; height: 110px;
-            z-index: 10; cursor: pointer;
-            transition: transform 0.1s;
+            width: clamp(110px, 18vw, 180px); /* বড় সাইজ */
+            height: auto; cursor: pointer; transition: transform 0.1s;
         }
         #ball img { 
             width: 100%; height: 100%; object-fit: contain; 
-            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.6));
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.6));
         }
+        /* পাশের পায়ের ইমোজি */
+        #static-foot { font-size: clamp(40px, 6vw, 60px); margin-left: 10px; opacity: 0.8; }
 
-        /* বল কিক এনিমেশন */
-        .ball-kick {
-            animation: shootGoal 0.9s forwards cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
+        /* কিক এনিমেশন (গোল) */
+        .ball-goal { animation: shootGoal 0.9s forwards cubic-bezier(0.25, 0.46, 0.45, 0.94); }
         @keyframes shootGoal {
-            0% { bottom: 12%; transform: translateX(-50%) scale(1) rotate(0deg); }
-            100% { bottom: 75%; transform: translateX(-50%) scale(0.3) rotate(720deg); opacity: 0; }
+            100% { bottom: 75%; left: 50%; transform: scale(0.4) rotate(720deg); opacity: 0; }
+        }
+        
+        /* কিক এনিমেশন (মিস) */
+        .ball-miss { animation: shootMiss 0.9s forwards ease-out; }
+        @keyframes shootMiss {
+            100% { bottom: 75%; left: 10%; /* বাইরে চলে যাবে */ transform: scale(0.4) rotate(-360deg); opacity: 0; }
         }
 
         /* পা (Leg Emoji) */
         #leg {
-            position: absolute; bottom: -120px; right: -50px;
-            font-size: 150px; z-index: 11; pointer-events: none;
-            transition: transform 0.15s ease-out;
-            transform: rotate(0deg); transform-origin: bottom right;
+            position: absolute; bottom: -15vh; right: -5vw;
+            font-size: clamp(120px, 25vw, 200px); z-index: 11; pointer-events: none;
+            transition: transform 0.15s ease-out; transform-origin: bottom right;
         }
-        .leg-kick { 
-            transform: rotate(-45deg) translate(-50px, -50px) !important; 
-        }
+        .leg-kick { transform: rotate(-45deg) translate(-50px, -80px) !important; }
 
-        /* গোল মেসেজ */
+        /* মেসেজ (GOAL / MISS) */
         #msg {
             position: absolute; top: 45%; left: 50%;
             transform: translate(-50%, -50%) scale(0);
-            font-size: 90px; font-weight: 900; color: #f1c40f;
-            text-shadow: 5px 5px #c0392b;
-            opacity: 0; z-index: 30; pointer-events: none;
+            font-size: clamp(60px, 10vw, 120px); font-weight: 900; color: #f1c40f;
+            text-shadow: 5px 5px #c0392b; opacity: 0; z-index: 30; pointer-events: none;
         }
+        .msg-miss { color: #e74c3c !important; text-shadow: 5px 5px #2c3e50 !important; }
         .show-msg { animation: popMsg 1.2s forwards; }
-        
         @keyframes popMsg {
-            0% { opacity: 0; transform: translate(-50%, -50%) scale(0); }
             50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
             100% { opacity: 0; transform: translate(-50%, -150px) scale(1); }
         }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
+        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-20px); } }
 
         /* স্টার্ট স্ক্রিন */
         #overlay {
             position: absolute; inset: 0; background: rgba(0,0,0,0.85);
-            display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; text-align: center;
         }
         button {
             padding: 15px 50px; font-size: 24px; border: none; border-radius: 50px;
-            background: linear-gradient(45deg, #ff416c, #ff4b2b); 
-            color: white; font-weight: bold; cursor: pointer;
-            box-shadow: 0 10px 20px rgba(255, 75, 43, 0.5);
-            transition: transform 0.2s;
+            background: linear-gradient(45deg, #ff416c, #ff4b2b); color: white; font-weight: bold; cursor: pointer;
+            box-shadow: 0 10px 20px rgba(255, 75, 43, 0.5); margin-top: 20px;
         }
-        button:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
@@ -135,9 +144,14 @@
 </audio>
 
 <div id="game-container">
+    <div id="slogan">জয় বাংলা, জয় বঙ্গবন্ধু...<br>শেখ হাসিনার সালাম নিন,<br>ব্যালট বক্সে লাথি দিন!</div>
     <div id="ui">GOALS: <span id="score">0</span></div>
 
     <div id="goal-post">🥅</div>
+
+    <div id="keeper-container">
+        <img id="keeper-img" src="keeper_laugh.png" alt="Goalkeeper">
+    </div>
 
     <div class="line"></div>
     <div class="box-area"></div>
@@ -146,8 +160,11 @@
         <img src="salam.png" alt="Salam Character">
     </div>
 
-    <div id="ball">
-        <img src="box.png" alt="Ballot Box">
+    <div id="ball-container">
+        <div id="ball">
+            <img src="box.png" alt="Ballot Box">
+        </div>
+        <div id="static-foot">🦵</div>
     </div>
 
     <div id="leg">🦵</div>
@@ -155,15 +172,18 @@
     <div id="msg">GOAL!</div>
 
     <div id="overlay">
-        <h1 style="color:white; margin-bottom:20px;">VOTE PENALTY 🗳️</h1>
+        <h1 style="color:white; font-size: 3vw;">VOTE PENALTY: ULTIMATE 🗳️</h1>
         <button onclick="startGame()">ম্যাচ শুরু করুন ▶</button>
     </div>
 </div>
 
 <script>
-    const ball = document.getElementById('ball');
+    const ballBtn = document.getElementById('ball'); // ক্লিক করার জন্য
+    const ballAnim = document.getElementById('ball-container'); // এনিমেশনের জন্য পুরো কনটেইনার
     const leg = document.getElementById('leg');
     const salam = document.getElementById('salam-char');
+    const keeperImg = document.getElementById('keeper-img');
+    const keeperCont = document.getElementById('keeper-container');
     const msg = document.getElementById('msg');
     const scoreEl = document.getElementById('score');
     const music = document.getElementById('bg-music');
@@ -173,53 +193,68 @@
 
     function startGame() {
         document.getElementById('overlay').style.display = 'none';
-        
-        // মিউজিক চালু (ব্রাউজার পলিসির কারণে ইউজারের ক্লিকের পর বাজবে)
         music.volume = 0.5;
         music.play().catch(e => console.log("Music waiting for interaction"));
         
-        // মাউস ক্লিক বা টাচ করলে কিক হবে
-        document.getElementById('game-container').addEventListener('mousedown', kickBall);
-        document.getElementById('game-container').addEventListener('touchstart', (e) => {
-            e.preventDefault(); 
-            kickBall();
-        });
+        // পুরো স্ক্রিনে বা বক্সে ক্লিক করলে কিক হবে
+        document.getElementById('game-container').addEventListener('pointerdown', kickBall);
     }
 
-    function kickBall() {
+    function kickBall(e) {
         if (isKicking) return;
         isKicking = true;
 
-        // ১. পা দিয়ে লাথি মারা
+        // ৮০% চান্স গোল হওয়ার, ২০% চান্স মিস হওয়ার
+        let isGoal = Math.random() > 0.2; 
+
+        // ১. লাথি মারা
         leg.classList.add('leg-kick');
 
-        // ২. বল উড়ে যাওয়া
         setTimeout(() => {
-            leg.classList.remove('leg-kick'); 
-            ball.classList.add('ball-kick'); 
+            leg.classList.remove('leg-kick');
             
-            // ৩. গোল হওয়া এবং রিয়েকশন
-            setTimeout(() => {
-                score++;
-                scoreEl.innerText = score;
+            if (isGoal) {
+                // --- গোল হলে ---
+                ballAnim.classList.add('ball-goal');
+                msg.innerText = "GOAL!";
+                msg.classList.remove('msg-miss');
                 
-                // গোল মেসেজ
-                msg.classList.add('show-msg');
-                
-                // সালাম ক্যারেক্টার খুশিতে লাফাবে
-                salam.classList.add('salam-happy');
+                setTimeout(() => {
+                    score++;
+                    scoreEl.innerText = score;
+                    msg.classList.add('show-msg');
+                    salam.classList.add('salam-happy'); // সালাম খুশি
+                    
+                    // গোলকিপার কাঁদবে
+                    keeperImg.src = "keeper_cry.png";
+                    keeperCont.classList.add('keeper-cry');
+                }, 700);
 
-                // ৪. রিসেট করা
-                setTimeout(resetGame, 1500);
-            }, 700); 
+            } else {
+                // --- মিস হলে ---
+                ballAnim.classList.add('ball-miss');
+                msg.innerText = "MISS!";
+                msg.classList.add('msg-miss'); // লাল রঙের মেসেজ
+                
+                setTimeout(() => {
+                    msg.classList.add('show-msg');
+                    // গোলকিপার হাসবে (ডিফল্ট ছবি)
+                    keeperCont.classList.add('keeper-laugh');
+                }, 700);
+            }
+
+            // রিসেট
+            setTimeout(resetGame, 2000);
             
         }, 150);
     }
 
     function resetGame() {
-        ball.classList.remove('ball-kick');
+        ballAnim.classList.remove('ball-goal', 'ball-miss');
         msg.classList.remove('show-msg');
-        salam.classList.remove('salam-happy'); 
+        salam.classList.remove('salam-happy');
+        keeperCont.classList.remove('keeper-laugh', 'keeper-cry');
+        keeperImg.src = "keeper_laugh.png"; // আবার হাসির ছবিতে ফিরে যাবে
         isKicking = false;
     }
 </script>

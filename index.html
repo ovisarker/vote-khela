@@ -3,171 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Vote Penalty: Ultimate Pro</title>
+    <title>Vote Penalty: Ultimate</title>
     <style>
         /* --- বেসিক সেটআপ --- */
         body { margin: 0; overflow: hidden; background: #000; font-family: 'Segoe UI', sans-serif; touch-action: none; user-select: none; }
         
         #game-container {
             position: relative; width: 100vw; height: 100vh;
+            /* স্ক্রিনশটের মতো সবুজ ব্যাকগ্রাউন্ড */
             background: linear-gradient(to bottom, #87CEEB 0%, #E0F7FA 30%, #4CAF50 30%, #2E7D32 100%);
             overflow: hidden;
-            transition: filter 0.2s;
         }
 
         /* --- লোডিং স্ক্রিন --- */
         #loader {
             position: fixed; inset: 0; background: #111; z-index: 200;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            color: white; font-size: 24px; transition: opacity 0.5s;
+            color: white; font-size: 20px; transition: opacity 0.5s;
         }
         .spinner {
-            width: 50px; height: 50px; border: 5px solid #333; border-top: 5px solid #FFD700;
-            border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px;
+            width: 40px; height: 40px; border: 4px solid #333; border-top: 4px solid #FFD700;
+            border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        /* --- স্লোগান --- */
+
+        /* --- স্লোগান (স্ক্রিনশটের মতো বামে) --- */
         #slogan {
-            position: absolute; top: 15px; left: 15px; z-index: 30;
-            color: #FFD700; font-weight: 800; font-size: clamp(12px, 2.5vw, 18px);
+            position: absolute; top: 10px; left: 10px; z-index: 30;
+            color: #FFD700; font-weight: 800; font-size: clamp(12px, 3vw, 16px);
             text-shadow: 1px 1px 2px #000; text-align: left;
-            background: rgba(0, 0, 0, 0.6); padding: 8px 15px; border-radius: 8px;
-            border-left: 4px solid #FFD700; pointer-events: none;
+            background: rgba(0, 0, 0, 0.6); padding: 8px 12px; border-radius: 8px;
+            border-left: 3px solid #FFD700; pointer-events: none; line-height: 1.4;
         }
 
-        /* স্কোরবোর্ড */
+        /* স্কোরবোর্ড (স্ক্রিনশটের মতো ডানে) */
         #ui {
-            position: absolute; top: 15px; right: 15px; z-index: 30;
-            color: #fff; font-size: clamp(16px, 3.5vw, 24px); font-weight: bold;
-            background: linear-gradient(90deg, #e63946, #d63031); 
-            padding: 8px 20px; border-radius: 30px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3); border: 2px solid white;
+            position: absolute; top: 10px; right: 10px; z-index: 30;
+            color: #fff; font-size: clamp(14px, 3vw, 18px); font-weight: bold;
+            background: #e63946; padding: 6px 15px; border-radius: 20px;
+            border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
 
-        /* --- গোল পোস্ট --- */
+        /* --- গোল পোস্ট (বিশাল সাইজ - ইমোজি) --- */
         #goal-post {
-            position: absolute; top: 22%; left: 50%;
+            position: absolute; top: 20%; left: 50%;
             transform: translateX(-50%);
-            font-size: clamp(200px, 50vw, 450px);
+            font-size: clamp(220px, 55vw, 450px);
             z-index: 2; opacity: 1; pointer-events: none;
-            filter: drop-shadow(0 15px 10px rgba(0,0,0,0.4));
+            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.3));
             line-height: 0;
         }
 
         /* --- গোলকিপার --- */
         #keeper-container {
             position: absolute; top: 38%; left: 50%; transform: translateX(-50%);
-            width: clamp(100px, 22vw, 180px); z-index: 5;
-            pointer-events: none; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            width: clamp(110px, 24vw, 190px); z-index: 5;
+            pointer-events: none; transition: transform 0.2s ease-out;
         }
         #keeper-container img { width: 100%; height: auto; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5)); }
         
+        /* এনিমেশন */
         .keeper-laugh { animation: shake 0.5s infinite; }
-        .keeper-cry { filter: hue-rotate(180deg) saturate(1.5); animation: bounce 0.4s infinite alternate; }
+        .keeper-cry { animation: bounce 0.4s infinite alternate; }
 
-        /* --- সালাম ইমেজ (সঠিক লম্বা নাম) --- */
+        /* --- সালাম ইমেজ (বামে নিচে) --- */
         #salam-char {
             position: absolute; bottom: 15%; left: 2%;
-            width: clamp(160px, 30vw, 320px); z-index: 10;
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            width: clamp(150px, 30vw, 280px); z-index: 10;
         }
-        #salam-char img { width: 100%; height: auto; filter: drop-shadow(5px 10px 20px rgba(0,0,0,0.6)); }
-        .salam-happy { transform: scale(1.1) rotate(5deg) !important; filter: brightness(1.2); }
+        #salam-char img { width: 100%; height: auto; filter: drop-shadow(5px 5px 15px rgba(0,0,0,0.6)); }
+        .salam-happy { animation: bounce 0.6s infinite alternate; }
 
         /* --- ব্যালট বক্স ও পা --- */
         #ball-container {
-            position: absolute; bottom: 8%; left: 48%;
-            transform: rotate(-3deg);
+            position: absolute; bottom: 8%; left: 50%;
+            transform: translateX(-50%) rotate(-2deg);
             display: flex; align-items: center; z-index: 20;
             transition: left 0.1s;
         }
         #ball {
-            width: clamp(120px, 22vw, 200px); height: auto; cursor: pointer; 
+            width: clamp(130px, 25vw, 220px); height: auto; cursor: pointer; 
             transition: transform 0.1s; position: relative;
         }
-        #ball img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 15px 20px rgba(0,0,0,0.7)); }
-        #static-foot { font-size: clamp(40px, 6vw, 60px); margin-left: -5px; opacity: 0.8; filter: grayscale(0.5); }
+        #ball img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.6)); }
+        #static-foot { font-size: clamp(40px, 6vw, 60px); margin-left: 5px; opacity: 0.8; filter: grayscale(0.5); }
 
         /* মাঠের দাগ */
-        .line { position: absolute; bottom: 30%; left: 0; width: 100%; height: 4vh; background: #388E3C; transform: skewX(-40deg); opacity: 0.5; }
-        .box-area {
-            position: absolute; bottom: 30%; left: 50%; transform: translateX(-50%) perspective(500px) rotateX(40deg);
-            width: 70%; height: 10vh; border: 8px solid rgba(255,255,255,0.8); border-top: none;
-        }
+        .line { position: absolute; bottom: 30%; left: 0; width: 100%; height: 2vh; background: #fff; opacity: 0.6; }
 
         /* কিক এনিমেশন */
         .ball-goal { animation: shootGoal 0.8s forwards cubic-bezier(0.2, 0.8, 0.2, 1); }
         @keyframes shootGoal {
             0% { transform: scale(1); }
-            100% { bottom: 60%; transform: scale(0.25) rotate(720deg); opacity: 0; }
+            100% { bottom: 65%; transform: scale(0.3) rotate(720deg); opacity: 0; }
         }
         
         .ball-miss { animation: shootMiss 0.8s forwards ease-out; }
         @keyframes shootMiss {
             0% { transform: scale(1); }
-            100% { bottom: 60%; transform: scale(0.25) rotate(-360deg); opacity: 0; }
+            100% { bottom: 65%; transform: scale(0.3) rotate(-360deg); opacity: 0; }
         }
 
-        /* প্লেয়ারের পা */
+        /* প্লেয়ারের পা (লুকানো থাকবে, কিকের সময় আসবে) */
         #leg {
-            position: absolute; bottom: -18vh; right: -5vw;
+            position: absolute; bottom: -20vh; right: -5vw;
             font-size: clamp(150px, 35vw, 280px); z-index: 25; pointer-events: none;
-            transition: transform 0.1s ease-out; transform-origin: bottom right; filter: drop-shadow(-10px 10px 10px rgba(0,0,0,0.5));
+            transition: transform 0.1s ease-out; transform-origin: bottom right; 
         }
-        .leg-kick { transform: rotate(-55deg) translate(-60px, -100px) !important; }
+        .leg-kick { transform: rotate(-45deg) translate(-60px, -100px) !important; }
 
         /* মেসেজ */
         #msg {
-            position: absolute; top: 45%; left: 50%;
+            position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%) scale(0);
-            font-size: clamp(50px, 12vw, 100px); font-weight: 900; 
-            text-transform: uppercase; font-style: italic;
+            font-size: clamp(60px, 15vw, 100px); font-weight: 900; 
             z-index: 50; pointer-events: none; opacity: 0;
+            text-shadow: 3px 3px 0 #000;
         }
-        .msg-goal { color: #FFD700; text-shadow: 0 5px 0 #e67e22, 0 10px 20px rgba(0,0,0,0.5); }
-        .msg-miss { color: #ff4757; text-shadow: 0 5px 0 #a40e1c, 0 10px 20px rgba(0,0,0,0.5); }
+        .msg-goal { color: #FFD700; }
+        .msg-miss { color: #ff4757; }
         
-        .show-msg { animation: popMsg 1s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .show-msg { animation: popMsg 1s forwards; }
         @keyframes popMsg {
             0% { opacity: 0; transform: translate(-50%, -50%) scale(0); }
             50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
             100% { opacity: 0; transform: translate(-50%, -150px) scale(1.5); }
         }
 
-        /* স্ক্রিন শেক এফেক্ট */
-        .shake-screen { animation: screenShake 0.4s; }
-        @keyframes screenShake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px) rotate(-1deg); }
-            75% { transform: translateX(5px) rotate(1deg); }
-        }
-
-        /* কনফেটি */
-        .confetti {
-            position: absolute; width: 10px; height: 10px; background-color: #f00;
-            animation: fall linear forwards; z-index: 40;
-        }
-        @keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
-
-        /* স্টার্ট স্ক্রিন & গেম ওভার */
+        /* স্টার্ট স্ক্রিন */
         #overlay {
-            position: absolute; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px);
+            position: absolute; inset: 0; background: rgba(0,0,0,0.85);
             display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; text-align: center;
         }
-        #overlay h1 {
-            color: white; font-size: clamp(30px, 8vw, 60px); text-transform: uppercase;
-            text-shadow: 0 0 20px #FF416C; margin-bottom: 20px;
-        }
-        #final-score { color: #FFD700; font-size: 24px; margin-bottom: 20px; }
+        #overlay h1 { color: white; font-size: clamp(24px, 6vw, 40px); margin-bottom: 20px; }
         button {
-            padding: 15px 50px; font-size: 22px; border: none; border-radius: 50px;
+            padding: 15px 40px; font-size: 20px; border: none; border-radius: 50px;
             background: linear-gradient(45deg, #FF416C, #FF4B2B); color: white; font-weight: bold; cursor: pointer;
-            box-shadow: 0 10px 30px rgba(255, 75, 43, 0.6); transition: transform 0.1s;
+            box-shadow: 0 5px 15px rgba(255, 75, 43, 0.5);
         }
-        button:active { transform: scale(0.95); }
 
-        /* Animations */
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
         @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-15px); } }
     </style>
@@ -176,7 +150,7 @@
 
 <div id="loader">
     <div class="spinner"></div>
-    <div>গেম লোড হচ্ছে...</div>
+    <div id="loading-text">ছবি লোড হচ্ছে...</div>
 </div>
 
 <audio id="bg-music" loop>
@@ -184,18 +158,21 @@
 </audio>
 
 <div id="game-container">
-    <div id="slogan">জয় বাংলা, জয় বঙ্গবন্ধু...<br>শেখ হাসিনার সালাম নিন,<br>ব্যালট বক্সে লাথি দিন!</div>
+    <div id="slogan">
+        জয় বাংলা, জয় বঙ্গবন্ধু...<br>
+        শেখ হাসিনার সালাম নিন,<br>
+        ব্যালট বক্সে লাথি দিন!
+    </div>
     
     <div id="ui">GOALS: <span id="score">0</span></div>
 
     <div id="goal-post">🥅</div>
 
     <div id="keeper-container">
-        <img id="keeper-img" src="Gemini_Generated_Image_t3goelt3goelt3go.png" alt="Keeper">
+        <img id="keeper-img" src="defense.png" alt="Keeper">
     </div>
 
     <div class="line"></div>
-    <div class="box-area"></div>
 
     <div id="salam-char">
         <img src="Gemini_Generated_Image_95l72b95l72b95l7.png" alt="Salam">
@@ -212,13 +189,20 @@
     <div id="msg">GOAL!</div>
 
     <div id="overlay">
-        <h1>VOTE KHELA PRO 🗳️</h1>
-        <div id="final-score" style="display:none;">Final Score: 0</div>
+        <h1>VOTE KHELA PRO</h1>
         <button onclick="startGame()">ম্যাচ শুরু ▶</button>
     </div>
 </div>
 
 <script>
+    // --- ফাইলের নামের তালিকা (গিটহাব অনুযায়ী হুবহু) ---
+    const keeperDefaultSrc = "defense.png";
+    const keeperLaughSrc = "Gemini_Generated_Image_t3goelt3goelt3go.png";
+    const keeperCrySrc = "Gemini_Generated_Image_gzxxk1gzxxk1gzxx.png";
+    const salamSrc = "Gemini_Generated_Image_95l72b95l72b95l7.png";
+    const boxSrc = "box.png";
+    const musicSrc = "FBDownloader.to-4256735371281819-(320kbps).mp3";
+
     // এলিমেন্ট সিলেক্টর
     const gameContainer = document.getElementById('game-container');
     const ballAnim = document.getElementById('ball-container');
@@ -227,60 +211,61 @@
     const keeperImg = document.getElementById('keeper-img');
     const keeperCont = document.getElementById('keeper-container');
     const msg = document.getElementById('msg');
-    const ui = document.getElementById('ui');
+    const scoreEl = document.getElementById('score');
     const music = document.getElementById('bg-music');
     const loader = document.getElementById('loader');
     const overlay = document.getElementById('overlay');
-    const finalScoreEl = document.getElementById('final-score');
-    
-    // ফাইলের নাম (সঠিক লম্বা নাম)
-    const keeperLaughSrc = "Gemini_Generated_Image_t3goelt3goelt3go.png";
-    const keeperCrySrc = "Gemini_Generated_Image_gzxxk1gzxxk1gzxx.png";
 
-    // গেম স্টেট
-    let state = {
-        score: 0,
-        lives: 3,
-        isKicking: false,
-        active: false
-    };
+    let score = 0;
+    let isKicking = false;
+    let gameActive = false;
 
-    // উইন্ডো লোড হলে লোডার সরানো
-    window.addEventListener('load', () => {
-        setTimeout(() => {
-            if(loader) {
-                loader.style.opacity = '0';
-                setTimeout(() => loader.style.display = 'none', 500);
-            }
-        }, 1000);
-    });
+    // --- প্রি-লোডার (Preloader) ---
+    // সব ছবি লোড না হওয়া পর্যন্ত গেম শুরু হবে না
+    const assets = [keeperDefaultSrc, keeperLaughSrc, keeperCrySrc, salamSrc, boxSrc];
+    let loadedCount = 0;
 
-    function updateUI() {
-        let lifeIcons = "⚽".repeat(state.lives);
-        ui.innerHTML = `GOALS: <span style="color:#FFD700">${state.score}</span> | LIFE: ${lifeIcons}`;
+    function preloadImages() {
+        assets.forEach(src => {
+            const img = new Image();
+            img.src = src;
+            img.onload = () => {
+                loadedCount++;
+                if (loadedCount >= assets.length) {
+                    // সব ছবি লোড হলে লোডার সরে যাবে
+                    loader.style.opacity = '0';
+                    setTimeout(() => loader.style.display = 'none', 500);
+                }
+            };
+            img.onerror = () => {
+                // কোনো ছবি না পেলে কনসোলে এরর দেখাবে কিন্তু গেম আটকাবে না
+                console.error("Image failed:", src);
+                loadedCount++;
+                if (loadedCount >= assets.length) loader.style.display = 'none';
+            };
+        });
     }
+
+    // উইন্ডো লোড হলে প্রি-লোড শুরু
+    window.onload = preloadImages;
 
     function startGame() {
         overlay.style.display = 'none';
-        finalScoreEl.style.display = 'none';
+        score = 0;
+        scoreEl.innerText = score;
+        gameActive = true;
         
-        // রিসেট
-        state.score = 0;
-        state.lives = 3;
-        state.isKicking = false;
-        state.active = true;
-        updateUI();
-
+        // মিউজিক চালু
         music.volume = 0.5;
-        music.play().catch(e => console.log("Music auto-play blocked"));
-        
+        music.play().catch(e => console.log("Music auto-play blocked by browser"));
+
         // ইনপুট লিসেনার
         gameContainer.onpointerdown = handleInput;
     }
 
     function handleInput(e) {
-        if (!state.active || state.isKicking) return;
-        
+        if (!gameActive || isKicking) return;
+
         // ক্লিক পজিশন (বামে নাকি ডানে?)
         const x = e.clientX || (e.touches && e.touches[0].clientX);
         const screenMiddle = window.innerWidth / 2;
@@ -290,44 +275,42 @@
     }
 
     function kickBall(aim) {
-        state.isKicking = true;
+        isKicking = true;
 
-        // গোলকিপার AI
+        // গোলকিপার AI: র‍্যান্ডমলি ডাইভ দেবে (বামে বা ডানে)
         const keeperDive = Math.random() < 0.5 ? 'left' : 'right';
         
-        // গোল হওয়ার লজিক
+        // গোল হওয়ার লজিক: উল্টো দিকে মারলে ৯০% গোল, একই দিকে মারলে ৩০%
         let goalChance = (aim !== keeperDive) ? 0.9 : 0.3;
         let isGoal = Math.random() < goalChance;
 
-        // পায়ের এনিমেশন
+        // ১. পায়ের এনিমেশন
         leg.classList.add('leg-kick');
 
         setTimeout(() => {
             leg.classList.remove('leg-kick');
-            
-            // কিপার মুভমেন্ট (ডাইভ)
-            let moveX = keeperDive === 'left' ? -60 : 60;
-            keeperCont.style.transform = `translateX(calc(-50% + ${moveX}px)) rotate(${moveX/3}deg)`;
+
+            // ২. কিপার মুভমেন্ট (Defense পজিশন থেকে সরে যাবে)
+            let moveX = keeperDive === 'left' ? -50 : 50;
+            keeperCont.style.transform = `translateX(calc(-50% + ${moveX}px))`;
 
             if (isGoal) {
                 // --- GOAL ---
-                ballAnim.style.left = aim === 'left' ? '40%' : '56%';
+                ballAnim.style.left = aim === 'left' ? '40%' : '60%';
                 ballAnim.classList.add('ball-goal');
                 
                 msg.innerText = "GOAL!";
                 msg.className = 'msg-goal';
                 
                 setTimeout(() => {
-                    state.score++;
+                    score++;
+                    scoreEl.innerText = score;
                     msg.classList.add('show-msg');
                     salam.classList.add('salam-happy');
-                    gameContainer.classList.add('shake-screen');
-                    createConfetti();
 
+                    // গোলকিপার কান্না (Cry)
                     keeperImg.src = keeperCrySrc;
                     keeperCont.classList.add('keeper-cry');
-                    
-                    updateUI();
                 }, 500);
 
             } else {
@@ -335,68 +318,38 @@
                 ballAnim.style.left = aim === 'left' ? '25%' : '75%';
                 ballAnim.classList.add('ball-miss');
                 
-                msg.innerText = (aim === keeperDive) ? "SAVED!" : "MISS!";
+                msg.innerText = "MISS!";
                 msg.className = 'msg-miss';
-                
-                state.lives--;
-                updateUI();
                 
                 setTimeout(() => {
                     msg.classList.add('show-msg');
+                    
+                    // গোলকিপার হাসি (Laugh)
                     keeperImg.src = keeperLaughSrc;
                     keeperCont.classList.add('keeper-laugh');
                 }, 500);
             }
 
-            // রাউন্ড রিসেট বা গেম ওভার
-            setTimeout(() => {
-                if(state.lives <= 0) {
-                    gameOver();
-                } else {
-                    resetRound();
-                }
-            }, 2000);
+            // ৩. রিসেট রাউন্ড
+            setTimeout(resetRound, 2000);
             
         }, 150);
     }
 
     function resetRound() {
         ballAnim.classList.remove('ball-goal', 'ball-miss');
-        ballAnim.style.left = '48%'; // বল মাঝখানে ফেরত
+        ballAnim.style.left = '50%'; // বল মাঝখানে ফেরত
+        
         msg.classList.remove('show-msg');
         salam.classList.remove('salam-happy');
+        
         keeperCont.classList.remove('keeper-laugh', 'keeper-cry');
-        gameContainer.classList.remove('shake-screen');
         keeperCont.style.transform = `translateX(-50%)`; // কিপার মাঝখানে ফেরত
-        keeperImg.src = keeperLaughSrc; 
-        state.isKicking = false;
         
-        // কনফেটি ডিলিট
-        document.querySelectorAll('.confetti').forEach(e => e.remove());
-    }
-
-    function gameOver() {
-        state.active = false;
-        music.pause();
+        // কিপার আবার ডিফেন্স পজিশনে (Default)
+        keeperImg.src = keeperDefaultSrc; 
         
-        // গেম ওভার স্ক্রিন
-        overlay.querySelector('h1').innerText = "GAME OVER";
-        overlay.querySelector('button').innerText = "Play Again 🔄";
-        finalScoreEl.innerText = `Final Score: ${state.score}`;
-        finalScoreEl.style.display = 'block';
-        overlay.style.display = 'flex';
-    }
-
-    // কনফেটি ফাংশন
-    function createConfetti() {
-        for(let i=0; i<30; i++) {
-            const confetti = document.createElement('div');
-            confetti.classList.add('confetti');
-            confetti.style.left = Math.random() * 100 + 'vw';
-            confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
-            confetti.style.animationDuration = Math.random() * 2 + 1 + 's';
-            gameContainer.appendChild(confetti);
-        }
+        isKicking = false;
     }
 </script>
 

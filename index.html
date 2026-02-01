@@ -22,7 +22,7 @@
     #loader {
       position: fixed; inset: 0; background: #111; z-index: 200;
       display: flex; flex-direction: column; justify-content: center; align-items: center;
-      color: white; font-size: 20px; transition: opacity 0.5s;
+      color: white; font-size: 20px; transition: opacity 0.5s ease;
       text-align: center; padding: 18px;
     }
     .spinner {
@@ -32,12 +32,14 @@
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     #loading-text { opacity: 0.95; }
 
-    /* --- ইন্ট্রো স্ক্রিন (নোটিশ) --- */
+    /* --- INTRO SCREEN --- */
     #intro-layer {
       position: fixed; inset: 0; background: rgba(0,0,0,0.95);
       z-index: 150;
-      display: flex; flex-direction: column; justify-content: center; align-items: center;
-      padding: 20px; text-align: center; display: none;
+      display: none;
+      flex-direction: column; justify-content: center; align-items: center;
+      padding: 20px; text-align: center;
+      opacity: 1; transition: opacity 0.5s ease;
     }
     #intro-layer img {
       max-width: 90%; max-height: 70vh;
@@ -53,7 +55,7 @@
     }
     @keyframes pulseBtn { 0%,100%{transform:scale(1);} 50%{transform:scale(1.05);} }
 
-    /* --- ✅ আপনার অরিজিনাল স্লোগান (বামে) --- */
+    /* --- স্লোগান --- */
     #slogan {
       position: absolute; top: 15px; left: 15px; z-index: 30;
       color: #FFD700; font-weight: 800; font-size: clamp(12px, 3vw, 18px);
@@ -63,7 +65,7 @@
       max-width: 50vw; white-space: pre-line;
     }
 
-    /* --- স্কোরবোর্ড (মাঝখানে) --- */
+    /* --- UI --- */
     #ui {
       position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
       z-index: 35; display: flex; align-items: center; gap: 10px;
@@ -190,6 +192,7 @@
       100% { opacity: 0; transform: translate(-50%, -150px) scale(1.5); }
     }
 
+    /* ওভারলে */
     #overlay {
       position: absolute; inset: 0; background: rgba(0,0,0,0.85);
       display: none;
@@ -223,7 +226,7 @@
 
   <div id="intro-layer">
     <img src="intro.jpg" alt="Notice">
-    <button id="intro-btn" onclick="closeIntro()">CONTINUE ▶</button>
+    <button id="intro-btn" type="button">CONTINUE ▶</button>
   </div>
 
   <audio id="bg-music" loop preload="auto">
@@ -232,7 +235,7 @@
 
   <div id="badge-container" aria-hidden="true">
     <div id="badge-img-wrapper">
-      <img src="boat.jpg" alt="Boat Badge" />
+      <img src="boat.png" alt="Boat Badge" />
     </div>
     <div class="hashtag-box">#No_Boat&nbsp;&nbsp;#No_Vote</div>
   </div>
@@ -287,7 +290,7 @@
     const keeperCrySrc     = "Gemini_Generated_Image_gzxxk1gzxxk1gzxx.png";
     const salamSrc         = "Gemini_Generated_Image_95l72b95l72b95l7.png";
     const boxSrc           = "box.png";
-    const badgeSrc         = "boat.jpg";
+    const badgeSrc         = "boat.png"; // ✅ Updated to .png
     const introSrc         = "intro.jpg"; 
 
     // --- এলিমেন্ট ---
@@ -305,6 +308,8 @@
     const music         = document.getElementById("bg-music");
     const loader        = document.getElementById("loader");
     const introLayer    = document.getElementById("intro-layer");
+    const introBtn      = document.getElementById("intro-btn");
+
     const overlay       = document.getElementById("overlay");
     const overlayTitle  = document.getElementById("overlay-title");
     const finalScoreEl  = document.getElementById("final-score");
@@ -320,7 +325,7 @@
       muteBtn.textContent = music.muted ? "🔇" : "🔊";
     });
 
-    // --- Preloader ---
+    // --- Preloader (Intro সহ) ---
     const assets = [
       introSrc,
       keeperDefaultSrc, keeperLaughSrc, keeperCrySrc,
@@ -363,14 +368,18 @@
 
     window.addEventListener("load", boot);
 
+    // --- Intro Close Function ---
     function closeIntro() {
         introLayer.style.opacity = "0";
+        introLayer.style.pointerEvents = "none";
         setTimeout(() => { 
             introLayer.style.display = "none"; 
             overlay.style.display = "flex";
-        }, 400);
+        }, 500);
     }
+    introBtn.onclick = closeIntro;
 
+    // --- Game Logic ---
     function updateUI() {
       scoreEl.textContent = String(state.score);
       lifeEl.textContent = "⚽".repeat(Math.max(0, state.lives));
@@ -480,6 +489,7 @@
     function gameOver() {
       state.active = false;
       state.isKicking = false;
+
       music.pause();
       music.currentTime = 0;
 

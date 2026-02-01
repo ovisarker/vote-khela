@@ -16,7 +16,6 @@
 
     #game-container {
       position: relative; width: 100vw; height: 100vh;
-      /* ঘাসের টেক্সচার এবং আকাশ */
       background: linear-gradient(to bottom, #87CEEB 0%, #E0F7FA 30%, #2E7D32 30%, #1b5e20 100%);
       overflow: hidden; will-change: transform;
     }
@@ -42,7 +41,7 @@
       opacity: 1; transition: opacity 0.5s ease;
     }
     #intro-layer img {
-      max-width: 90%; max-height: 60vh;
+      max-width: 85%; max-height: 60vh;
       border: 3px solid #fff; border-radius: 10px;
       margin-bottom: 20px;
     }
@@ -107,12 +106,11 @@
       display: flex; align-items: center; justify-content: center; font-size: 12px;
     }
 
-    /* --- ৪. গোলপোস্ট (Real Look - White) --- */
+    /* --- ৪. গোলপোস্ট --- */
     #goal-post {
       position: absolute; top: 20%; left: 50%; transform: translateX(-50%);
       font-size: clamp(200px, 60vw, 450px);
       z-index: 2; pointer-events: none;
-      /* পিংক ইমোজিকে সাদা করার জন্য ফিল্টার */
       filter: grayscale(100%) brightness(300%) drop-shadow(0 10px 15px rgba(0,0,0,0.5));
       line-height: 0;
     }
@@ -127,7 +125,7 @@
     .keeper-laugh { animation: shake 0.5s infinite; }
     .keeper-cry { animation: bounce 0.4s infinite alternate; }
 
-    /* --- ৬. সালাম ইমেজ (FIXED) --- */
+    /* --- ৬. সালাম ক্যারেক্টার (বাম কোণায়) --- */
     #salam-char {
       position: absolute; 
       bottom: 0; left: 0;
@@ -196,7 +194,6 @@
     }
     button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    /* --- মোবাইল স্ক্রিন ফিক্স --- */
     @media (max-height: 650px) {
       #goal-post { top: 15%; font-size: 160px; }
       #keeper-container { top: 34%; width: 85px; }
@@ -207,10 +204,7 @@
 </head>
 
 <body>
-  <div id="loader">
-    <div class="spinner"></div>
-    <div id="loading-text">লোড হচ্ছে...</div>
-  </div>
+  <div id="loader"><div class="spinner"></div><div id="loading-text">লোড হচ্ছে...</div></div>
 
   <div id="intro-layer">
     <img src="intro.jpg" alt="Notice">
@@ -248,7 +242,7 @@
     <div class="line"></div>
 
     <div id="salam-char">
-      <img src="salam.png" alt="Character">
+      <img id="salam-img" src="salam.png" alt="Character">
     </div>
 
     <div id="ball-container">
@@ -268,18 +262,19 @@
   </div>
 
   <script>
-    // --- ফাইল ---
     const keeperDefaultSrc = "defense.png";
     const keeperLaughSrc   = "laugh.png";
     const keeperCrySrc     = "cry.png";
     const salamSrc         = "salam.png";
+    const noSalamSrc       = "no_salam.png"; // ✅ New Image
     const boxSrc           = "box.png";
     const boatSrc          = "boat.png";
     const introSrc         = "intro.jpg";
 
     const gameContainer = document.getElementById("game-container");
     const ballAnim      = document.getElementById("ball-container");
-    const salam         = document.getElementById("salam-char");
+    const salamImg      = document.querySelector("#salam-char img"); // Select Image Element
+    const salamDiv      = document.getElementById("salam-char");
     const keeperImg     = document.getElementById("keeper-img");
     const keeperCont    = document.getElementById("keeper-container");
     const msg           = document.getElementById("msg");
@@ -304,7 +299,7 @@
       muteBtn.textContent = music.muted ? "🔇" : "🔊";
     });
 
-    const assets = [introSrc, keeperDefaultSrc, keeperLaughSrc, keeperCrySrc, salamSrc, boxSrc, boatSrc];
+    const assets = [introSrc, keeperDefaultSrc, keeperLaughSrc, keeperCrySrc, salamSrc, noSalamSrc, boxSrc, boatSrc];
 
     function preloadImages(list) {
       let loaded = 0;
@@ -386,7 +381,6 @@
       let goalChance = (aim !== keeperDive) ? (0.90 - level * 0.03) : (0.30 - level * 0.01);
       const isGoal = Math.random() < Math.max(0.15, Math.min(0.92, goalChance));
 
-      // কিক এনিমেশন (পা নেই, শুধু বল মুভ হবে)
       setTimeout(() => {
         const moveX = keeperDive === "left" ? -50 : 50;
         keeperCont.style.transform = `translateX(calc(-50% + ${moveX}px))`;
@@ -400,7 +394,11 @@
           msg.className = "msg-goal show-msg";
           setTimeout(() => {
             state.score++; updateUI();
-            salam.classList.add("salam-happy");
+            
+            // ✅ Goal: Happy Face
+            salamImg.src = salamSrc; 
+            salamDiv.classList.add("salam-happy");
+            
             keeperImg.src = keeperCrySrc;
             keeperCont.classList.add("keeper-cry");
           }, 450);
@@ -414,6 +412,9 @@
           
           state.lives--; updateUI();
           setTimeout(() => {
+            // ✅ Miss: Angry/Sad Face
+            salamImg.src = noSalamSrc;
+            
             keeperImg.src = keeperLaughSrc;
             keeperCont.classList.add("keeper-laugh");
           }, 450);
@@ -423,14 +424,18 @@
           if (state.lives <= 0) gameOver();
           else resetRound(false);
         }, 1800);
-      }, 50); // Delay reduced as no leg anim
+      }, 50);
     }
 
     function resetRound(hardReset) {
       ballAnim.classList.remove("ball-goal", "ball-miss");
       ballAnim.style.left = "50%";
       msg.className = "";
-      salam.classList.remove("salam-happy");
+      
+      // ✅ Reset to Normal Face
+      salamImg.src = salamSrc;
+      salamDiv.classList.remove("salam-happy");
+      
       keeperCont.classList.remove("keeper-laugh", "keeper-cry");
       keeperCont.style.transform = "translateX(-50%)";
       keeperImg.src = keeperDefaultSrc;

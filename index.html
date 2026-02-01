@@ -6,12 +6,11 @@
   <title>ব্যালট বক্সে লাথি</title>
 
   <style>
-    /* --- বেসিক সেটআপ (মোবাইল স্ক্রল ফিক্স) --- */
+    /* --- বেসিক সেটআপ --- */
     body {
       margin: 0; overflow: hidden; background: #000;
       font-family: "Segoe UI", 'Arial', sans-serif;
-      touch-action: none; /* মোবাইলে জুম/স্ক্রল বন্ধ */
-      user-select: none;
+      touch-action: none; user-select: none;
       -webkit-tap-highlight-color: transparent;
     }
 
@@ -21,7 +20,7 @@
       overflow: hidden; will-change: transform;
     }
 
-    /* --- কনফেটি --- */
+    /* --- কনফেটি ক্যানভাস --- */
     #confetti-canvas {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
       pointer-events: none; z-index: 100;
@@ -48,7 +47,7 @@
       opacity: 1; transition: opacity 0.5s ease;
     }
     #intro-layer img {
-      max-width: 90%; max-height: 60vh;
+      max-width: 85%; max-height: 60vh;
       border: 3px solid #fff; border-radius: 10px;
       margin-bottom: 20px;
     }
@@ -69,7 +68,7 @@
       background: rgba(0, 0, 0, 0.6); padding: 5px 10px; border-radius: 8px;
       border-left: 3px solid #FFD700;
       pointer-events: none; line-height: 1.4;
-      max-width: 35vw; /* মোবাইলে জায়গা ঠিক রাখা */
+      max-width: 40vw;
     }
 
     /* --- ২. বোট গ্রুপ (ডানে) --- */
@@ -98,10 +97,10 @@
     @keyframes floatGroup { 0%,100%{transform:translateY(0);} 50%{transform:translateY(5px);} }
     @keyframes boatRock { 0%,100%{transform:rotate(0deg);} 25%{transform:rotate(-3deg);} 75%{transform:rotate(3deg);} }
 
-    /* --- ৩. স্কোরবোর্ড (পজিশন ফিক্সড) --- */
+    /* --- ৩. স্কোরবোর্ড --- */
     #ui {
       position: absolute; 
-      top: 10%; /* গোলপোস্টের থেকে একটু উপরে */
+      top: 10%; /* মোবাইলে গোলপোস্ট থেকে দূরে */
       left: 50%; transform: translateX(-50%);
       z-index: 35; display: flex; align-items: center; gap: 8px;
       color: #fff; font-size: clamp(14px, 4vw, 20px); font-weight: 800;
@@ -115,10 +114,10 @@
       display: flex; align-items: center; justify-content: center; font-size: 12px;
     }
 
-    /* --- ৪. গোলপোস্ট (সাদা) --- */
+    /* --- ৪. গোলপোস্ট --- */
     #goal-post {
       position: absolute; 
-      top: 22%; /* মোবাইলে যাতে স্কোরের সাথে না লাগে */
+      top: 22%; 
       left: 50%; transform: translateX(-50%);
       font-size: clamp(180px, 60vw, 450px);
       z-index: 2; pointer-events: none;
@@ -129,7 +128,7 @@
     /* --- ৫. গোলকিপার --- */
     #keeper-container {
       position: absolute; 
-      top: 40%; /* পোস্টের সাথে অ্যাডজাস্টেড */
+      top: 40%; 
       left: 50%; transform: translateX(-50%);
       width: clamp(80px, 25vw, 190px);
       z-index: 5; pointer-events: none; transition: transform 0.2s ease-out;
@@ -150,9 +149,9 @@
     .salam-happy { animation: bounceBig 0.6s infinite alternate; }
     @keyframes bounceBig { from { transform: translateY(0); } to { transform: translateY(-20px); } }
 
-    /* --- বল এবং পা --- */
+    /* --- বল --- */
     #ball-container {
-      position: absolute; bottom: 10%; left: 50%;
+      position: absolute; bottom: 12%; left: 50%;
       transform: translateX(-50%) rotate(-2deg);
       display: flex; align-items: center; justify-content: center; z-index: 20;
       transition: left 0.18s ease; will-change: left, transform, opacity;
@@ -160,15 +159,16 @@
     #ball { width: clamp(90px, 25vw, 200px); cursor: pointer; position: relative; }
     #ball img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 8px 15px rgba(0,0,0,0.5)); }
     
-    /* ✅ STATIC FOOT FIX (মোবাইলেও বক্সের সাথে থাকবে) */
+    /* ✅ STATIC FOOT ADJUSTMENT (ফিক্স করা হয়েছে) */
     #static-foot {
       position: absolute;
-      right: -12%; 
-      bottom: 10%;
-      font-size: clamp(25px, 8vw, 60px);
+      right: -2%; /* বক্সের আরও কাছে */
+      bottom: 20%; /* একটু উপরে যাতে মনে হয় কিক করবে */
+      font-size: clamp(35px, 10vw, 70px);
       pointer-events: none;
       filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5));
-      transform: rotate(-10deg);
+      transform: rotate(-15deg); /* কিকিং অ্যাঙ্গেল */
+      z-index: 21; /* বলের উপরে */
     }
 
     .line { position: absolute; bottom: 30%; left: 0; width: 100%; height: 2vh; background: #fff; opacity: 0.6; }

@@ -55,16 +55,6 @@
     }
     @keyframes pulseBtn { 0%,100%{transform:scale(1);} 50%{transform:scale(1.05);} }
 
-    /* --- স্লোগান --- */
-    #slogan {
-      position: absolute; top: 15px; left: 15px; z-index: 30;
-      color: #FFD700; font-weight: 800; font-size: clamp(12px, 3vw, 18px);
-      text-shadow: 1px 1px 2px #000; text-align: left;
-      background: rgba(0, 0, 0, 0.65); padding: 10px 15px; border-radius: 8px;
-      border-left: 4px solid #FFD700; pointer-events: none; line-height: 1.5;
-      max-width: 50vw; white-space: pre-line;
-    }
-
     /* --- UI --- */
     #ui {
       position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
@@ -81,12 +71,16 @@
       background: rgba(0,0,0,0.25); color: #fff;
     }
 
-    /* --- Badge (Top Right) --- */
+    /* --- Badge (Moved to Top Left, Cross Removed) --- */
     #badge-container {
-      position: fixed; top: 10px; right: 10px; z-index: 60;
+      position: fixed;
+      top: 15px; /* Adjusted for top-left */
+      left: 15px; /* Moved to left */
+      z-index: 60;
       display: flex; flex-direction: column; align-items: center;
       animation: floatBadge 3s ease-in-out infinite;
-      pointer-events: none; transform-origin: top right;
+      pointer-events: none;
+      transform-origin: top left; /* Changed origin */
     }
     @keyframes floatBadge { 0%,100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
 
@@ -104,12 +98,7 @@
     }
     @keyframes wiggle { 0%,100%{ transform: rotate(0deg);} 35%{ transform: rotate(-2deg);} 70%{ transform: rotate(2deg);} }
 
-    #badge-img-wrapper::after {
-      content: ""; position: absolute; inset: 0;
-      background: linear-gradient(to bottom right, transparent 45%, red 45%, red 55%, transparent 55%),
-                  linear-gradient(to bottom left, transparent 45%, red 45%, red 55%, transparent 55%);
-      opacity: 0.8; border-radius: 50%;
-    }
+    /* Cross (X) effect removed here based on request */
 
     .hashtag-box {
       margin-top: -10px;
@@ -213,7 +202,7 @@
     @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-15px); } }
 
     @media (max-width: 420px) {
-      #badge-container { top: 58px; right: 10px; }
+      #badge-container { top: 58px; left: 15px; right: auto; } /* Adjusted for mobile left */
     }
   </style>
 </head>
@@ -241,12 +230,6 @@
   </div>
 
   <div id="game-container">
-    <div id="slogan">
-      জয় বাংলা, জয় বঙ্গবন্ধু...<br>
-      শেখ হাসিনার সালাম নিন,<br>
-      ব্যালট বক্সে লাথি দিন!
-    </div>
-
     <div id="ui">
       <div class="pill">GOALS: <span id="score">0</span></div>
       <div class="pill">LIFE: <span id="life">⚽⚽⚽</span></div>
@@ -290,8 +273,8 @@
     const keeperCrySrc     = "Gemini_Generated_Image_gzxxk1gzxxk1gzxx.png";
     const salamSrc         = "Gemini_Generated_Image_95l72b95l72b95l7.png";
     const boxSrc           = "box.png";
-    const badgeSrc         = "boat.png"; // ✅ Updated to .png
-    const introSrc         = "intro.jpg"; 
+    const badgeSrc         = "boat.png";
+    const introSrc         = "intro.jpg";
 
     // --- এলিমেন্ট ---
     const gameContainer = document.getElementById("game-container");
@@ -325,7 +308,7 @@
       muteBtn.textContent = music.muted ? "🔇" : "🔊";
     });
 
-    // --- Preloader (Intro সহ) ---
+    // --- Preloader ---
     const assets = [
       introSrc,
       keeperDefaultSrc, keeperLaughSrc, keeperCrySrc,
@@ -357,7 +340,7 @@
     async function boot() {
       await preloadImages(assets);
       assetsReady = true;
-      
+
       loader.style.opacity = "0";
       setTimeout(() => { loader.style.display = "none"; }, 500);
 
@@ -365,15 +348,14 @@
       introLayer.style.display = "flex";
       startBtn.disabled = false;
     }
-
     window.addEventListener("load", boot);
 
     // --- Intro Close Function ---
     function closeIntro() {
         introLayer.style.opacity = "0";
         introLayer.style.pointerEvents = "none";
-        setTimeout(() => { 
-            introLayer.style.display = "none"; 
+        setTimeout(() => {
+            introLayer.style.display = "none";
             overlay.style.display = "flex";
         }, 500);
     }

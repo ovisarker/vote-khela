@@ -65,7 +65,7 @@
       max-width: 45vw;
     }
 
-    /* --- ২. বোট গ্রুপ (ডানে) --- */
+    /* --- ২. বোট গ্রুপ + স্লোগান (ডানে) --- */
     #boat-group-right {
       position: fixed; top: 10px; right: 10px; z-index: 60;
       display: flex; flex-direction: column; align-items: center;
@@ -78,15 +78,19 @@
       filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
       animation: boatRock 3s ease-in-out infinite;
     }
+    /* ✅ স্লোগান আপডেট: দুই লাইনে */
     .mini-slogan-box {
       margin-top: -5px;
       background: #d63031; color: white;
-      font-weight: 900; font-size: clamp(9px, 2.5vw, 12px);
+      font-weight: 900; 
+      font-size: clamp(9px, 2.5vw, 12px); /* ফন্ট সাইজ একটু এডজাস্ট করা হয়েছে */
       padding: 4px 8px; border-radius: 8px;
       border: 1px solid white;
       box-shadow: 0 3px 6px rgba(0,0,0,0.4);
-      text-align: center; white-space: nowrap;
+      text-align: center; 
+      white-space: nowrap; 
       z-index: 61;
+      line-height: 1.3;
     }
     @keyframes floatGroup { 0%,100%{transform:translateY(0);} 50%{transform:translateY(5px);} }
     @keyframes boatRock { 0%,100%{transform:rotate(0deg);} 25%{transform:rotate(-3deg);} 75%{transform:rotate(3deg);} }
@@ -220,7 +224,9 @@
 
   <div id="boat-group-right" aria-hidden="true">
     <img src="boat.png" alt="Boat">
-    <div class="mini-slogan-box">নৌকা ছাড়া কিসের ভোট?</div>
+    <div class="mini-slogan-box">
+      সারা বাংলা বেঁধেছে জোট,<br>নৌকা ছাড়া কিসের ভোট?
+    </div>
   </div>
 
   <div id="game-container">
@@ -298,7 +304,6 @@
 
     const state = { score: 0, lives: 5, isKicking: false, active: false };
     
-    // ✅ হাই স্কোর লোড করা
     let bestScore = parseInt(localStorage.getItem('vp_best')) || 0;
     
     let assetsReady = false;
@@ -398,7 +403,6 @@
 
         ballAnim.style.left = aim === "left" ? "40%" : "60%";
         
-        // ✅ Safe Clean Up
         msg.classList.remove("msg-goal", "msg-miss", "show-msg");
 
         if (isGoal) {
@@ -425,7 +429,6 @@
           
           state.lives--; updateUI();
           setTimeout(() => {
-            // Miss হলে সাথে সাথে Happy রিমুভ
             salamDiv.classList.remove("salam-happy");
             salamImg.src = noSalamSrc;
             
@@ -462,7 +465,6 @@
       music.pause();
       music.currentTime = 0;
 
-      // ✅ হাই স্কোর চেক ও সেভ
       if (state.score > bestScore) {
         bestScore = state.score;
         localStorage.setItem('vp_best', bestScore);

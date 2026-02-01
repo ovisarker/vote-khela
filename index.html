@@ -3,9 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Vote Penalty: Ultimate</title>
-
-  <style>
+  <title>ব্যালট বক্সে লাথি</title> <style>
     /* --- বেসিক সেটআপ --- */
     body {
       margin: 0; overflow: hidden; background: #000;
@@ -143,7 +141,7 @@
     .salam-happy { animation: bounceBig 0.6s infinite alternate; }
     @keyframes bounceBig { from { transform: translateY(0); } to { transform: translateY(-20px); } }
 
-    /* --- বল এবং পা (Foot on Box) --- */
+    /* --- বল এবং পা --- */
     #ball-container {
       position: absolute; bottom: 10%; left: 50%;
       transform: translateX(-50%) rotate(-2deg);
@@ -153,7 +151,7 @@
     #ball { width: clamp(100px, 25vw, 200px); cursor: pointer; position: relative; }
     #ball img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 8px 15px rgba(0,0,0,0.5)); }
     
-    /* ✅ STATIC FOOT (পা বক্সের সাথে থাকবে) */
+    /* ✅ STATIC FOOT (Box এর সাথে লেগে থাকবে) */
     #static-foot {
       position: absolute;
       right: -15%; /* বক্সের ডান পাশে */
@@ -201,7 +199,7 @@
       flex-direction: column; justify-content: center; align-items: center;
       z-index: 100; text-align: center; padding: 15px;
     }
-    #overlay h1 { color: #fff; font-size: clamp(20px, 6vw, 40px); margin-bottom: 10px; }
+    #overlay h1 { color: #fff; font-size: clamp(24px, 7vw, 45px); margin-bottom: 10px; }
     #final-score { display: none; color: #FFD700; font-size: 24px; font-weight: bold; margin-bottom: 8px; }
     #best-score-display { display: none; color: #2ecc71; font-size: 18px; margin-bottom: 15px; font-weight: bold; }
     #overlay .hint { color: #d1d5db; font-size: 11px; margin-top: 14px; opacity: 0.8; }
@@ -234,6 +232,7 @@
   <canvas id="confetti-canvas"></canvas>
 
   <audio id="bg-music" loop preload="auto"><source src="FBDownloader.to-4256735371281819-(320kbps).mp3" type="audio/mpeg"></audio>
+  
   <audio id="sfx-kick" preload="auto"><source src="kick.mp3" type="audio/mpeg"></audio>
   <audio id="sfx-goal" preload="auto"><source src="goal.mp3" type="audio/mpeg"></audio>
   <audio id="sfx-miss" preload="auto"><source src="miss.mp3" type="audio/mpeg"></audio>
@@ -286,7 +285,7 @@
     <div id="msg">GOAL!</div>
 
     <div id="overlay">
-      <h1 id="overlay-title">VOTE KHELA PRO</h1>
+      <h1 id="overlay-title">ব্যালট বক্সে লাথি</h1>
       <div id="final-score">Score: 0</div>
       <div id="best-score-display">Best: 0</div>
       
@@ -320,7 +319,6 @@
     const scoreEl       = document.getElementById("score");
     const lifeEl        = document.getElementById("life");
     
-    // Audio Elements
     const music         = document.getElementById("bg-music");
     const sfxKick       = document.getElementById("sfx-kick");
     const sfxGoal       = document.getElementById("sfx-goal");
@@ -344,7 +342,6 @@
     let bestScore = parseInt(localStorage.getItem('vp_best')) || 0;
     let assetsReady = false;
 
-    // --- SOUND HELPER ---
     function playSfx(audio) {
       if(!music.muted) {
         audio.currentTime = 0;
@@ -354,7 +351,6 @@
 
     // --- SWIPE LOGIC ---
     let touchStartX = 0;
-    
     gameContainer.addEventListener('touchstart', (e) => {
         if(!state.active || state.isKicking) return;
         touchStartX = e.touches[0].clientX;
@@ -392,7 +388,7 @@
 
     shareBtn.addEventListener("click", () => {
         playSfx(sfxClick);
-        const text = `আমি Vote Penalty গেমসে ${state.score} গোল দিয়েছি! আপনি পারবেন আমার রেকর্ড ভাঙতে?`;
+        const text = `আমি 'ব্যালট বক্সে লাথি' গেমসে ${state.score} গোল দিয়েছি! আপনি পারবেন আমার রেকর্ড ভাঙতে?`;
         const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}&quote=${encodeURIComponent(text)}`;
         window.open(url, '_blank');
     });
@@ -446,7 +442,7 @@
       if (!assetsReady) return;
       playSfx(sfxClick);
       
-      overlayTitle.textContent = "VOTE KHELA PRO";
+      overlayTitle.textContent = "ব্যালট বক্সে লাথি";
       finalScoreEl.style.display = "none";
       bestScoreEl.style.display = "none";
       shareBtn.style.display = "none";
@@ -466,10 +462,9 @@
 
     function kickBall(aim) {
       state.isKicking = true;
-      playSfx(sfxKick); // Kick Sound
+      playSfx(sfxKick);
 
       const keeperDive = Math.random() < 0.5 ? "left" : "right";
-      
       const level = Math.min(10, Math.floor(state.score / 3));
       let goalChance = (aim !== keeperDive) ? (0.90 - level * 0.03) : (0.30 - level * 0.01);
       const isGoal = Math.random() < Math.max(0.15, Math.min(0.92, goalChance));
@@ -486,7 +481,6 @@
           msg.textContent = "GOAL!";
           msg.classList.add("msg-goal", "show-msg");
           
-          // Audio Ducking for Goal
           music.volume = 0.2; 
           playSfx(sfxGoal);
           fireConfetti();
@@ -504,7 +498,6 @@
           ballAnim.style.left = aim === "left" ? "25%" : "75%";
           ballAnim.classList.add("ball-miss");
           
-          // Audio Ducking for Miss
           music.volume = 0.3;
           playSfx(sfxMiss);
           setTimeout(() => { if(state.active) music.volume = 0.5; }, 1500);
@@ -572,7 +565,6 @@
       overlay.style.display = "flex";
     }
 
-    // --- Confetti ---
     let particles = [];
     function fireConfetti() {
         for(let i=0; i<30; i++) {
@@ -591,7 +583,6 @@
         ctx.clearRect(0,0,confettiCvs.width,confettiCvs.height);
         confettiCvs.width = window.innerWidth;
         confettiCvs.height = window.innerHeight;
-        
         for(let i=0; i<particles.length; i++) {
             let p = particles[i];
             p.x += p.vx;
@@ -605,7 +596,6 @@
         requestAnimationFrame(loopConfetti);
     }
     loopConfetti();
-
   </script>
 </body>
 </html>

@@ -59,7 +59,7 @@
     }
     @keyframes pulseBtn { 0%,100%{transform:scale(1);} 50%{transform:scale(1.05);} }
 
-    /* --- ১. মেইন স্লোগান (বামে) --- */
+    /* --- স্লোগান (বামে) --- */
     #slogan-left {
       position: absolute; top: 10px; left: 10px; z-index: 30;
       color: #FFD700; font-weight: 800;
@@ -71,7 +71,7 @@
       max-width: 45vw;
     }
 
-    /* --- ২. বোট গ্রুপ + স্লোগান (ডানে) --- */
+    /* --- বোট গ্রুপ (ডানে) --- */
     #boat-group-right {
       position: fixed; top: 10px; right: 10px; z-index: 60;
       display: flex; flex-direction: column; align-items: center;
@@ -97,7 +97,7 @@
     @keyframes floatGroup { 0%,100%{transform:translateY(0);} 50%{transform:translateY(5px);} }
     @keyframes boatRock { 0%,100%{transform:rotate(0deg);} 25%{transform:rotate(-3deg);} 75%{transform:rotate(3deg);} }
 
-    /* --- ৩. স্কোরবোর্ড --- */
+    /* --- স্কোরবোর্ড --- */
     #ui {
       position: absolute; top: 15%; left: 50%; transform: translateX(-50%);
       z-index: 35; display: flex; align-items: center; gap: 8px;
@@ -112,7 +112,7 @@
       display: flex; align-items: center; justify-content: center; font-size: 12px;
     }
 
-    /* --- ৪. গোলপোস্ট (সাদা) --- */
+    /* --- গোলপোস্ট (সাদা) --- */
     #goal-post {
       position: absolute; top: 20%; left: 50%; transform: translateX(-50%);
       font-size: clamp(200px, 60vw, 450px);
@@ -121,7 +121,7 @@
       line-height: 0;
     }
 
-    /* --- ৫. গোলকিপার --- */
+    /* --- গোলকিপার --- */
     #keeper-container {
       position: absolute; top: 38%; left: 50%; transform: translateX(-50%);
       width: clamp(90px, 25vw, 190px);
@@ -131,7 +131,7 @@
     .keeper-laugh { animation: shake 0.5s infinite; }
     .keeper-cry { animation: bounce 0.4s infinite alternate; }
 
-    /* --- ৬. সালাম ক্যারেক্টার --- */
+    /* --- সালাম ক্যারেক্টার --- */
     #salam-char {
       position: absolute; 
       bottom: 0; left: 0;
@@ -143,16 +143,27 @@
     .salam-happy { animation: bounceBig 0.6s infinite alternate; }
     @keyframes bounceBig { from { transform: translateY(0); } to { transform: translateY(-20px); } }
 
-    /* --- বল --- */
+    /* --- বল এবং পা (Foot on Box) --- */
     #ball-container {
       position: absolute; bottom: 10%; left: 50%;
       transform: translateX(-50%) rotate(-2deg);
-      display: flex; align-items: center; z-index: 20;
+      display: flex; align-items: center; justify-content: center; z-index: 20;
       transition: left 0.18s ease; will-change: left, transform, opacity;
     }
-    #ball { width: clamp(100px, 25vw, 200px); cursor: pointer; }
+    #ball { width: clamp(100px, 25vw, 200px); cursor: pointer; position: relative; }
     #ball img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 8px 15px rgba(0,0,0,0.5)); }
     
+    /* ✅ STATIC FOOT (পা বক্সের সাথে থাকবে) */
+    #static-foot {
+      position: absolute;
+      right: -15%; /* বক্সের ডান পাশে */
+      bottom: 10%;
+      font-size: clamp(30px, 8vw, 60px);
+      pointer-events: none;
+      filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5));
+      transform: rotate(-10deg);
+    }
+
     .line { position: absolute; bottom: 30%; left: 0; width: 100%; height: 2vh; background: #fff; opacity: 0.6; }
 
     /* কিক এনিমেশন */
@@ -269,6 +280,7 @@
       <div id="ball">
         <img id="ball-img" src="box.png" alt="Box">
       </div>
+      <div id="static-foot">🦵</div>
     </div>
 
     <div id="msg">GOAL!</div>
@@ -288,14 +300,11 @@
   </div>
 
   <script>
-    // --- অ্যাসেট লিস্ট ---
     const keeperDefaultSrc = "defense.png";
     const keeperLaughSrc   = "laugh.png";
     const keeperCrySrc     = "cry.png";
-    
     const salamSrc         = "salam.png";
     const noSalamSrc       = "no_salam.png";
-    
     const boxSrc           = "box.png";
     const boatSrc          = "boat.png";
     const introSrc         = "intro.jpg";
@@ -477,12 +486,11 @@
           msg.textContent = "GOAL!";
           msg.classList.add("msg-goal", "show-msg");
           
-          // ✅ Ducking Logic: Lower BG, Play Goal SFX
+          // Audio Ducking for Goal
           music.volume = 0.2; 
           playSfx(sfxGoal);
           fireConfetti();
           
-          // Restore BG Music Volume
           setTimeout(() => { if(state.active) music.volume = 0.5; }, 2500);
           
           setTimeout(() => {
@@ -496,7 +504,7 @@
           ballAnim.style.left = aim === "left" ? "25%" : "75%";
           ballAnim.classList.add("ball-miss");
           
-          // Miss SFX
+          // Audio Ducking for Miss
           music.volume = 0.3;
           playSfx(sfxMiss);
           setTimeout(() => { if(state.active) music.volume = 0.5; }, 1500);

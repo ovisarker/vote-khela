@@ -20,6 +20,12 @@
       overflow: hidden; will-change: transform;
     }
 
+    /* --- কনফেটি ক্যানভাস --- */
+    #confetti-canvas {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none; z-index: 100;
+    }
+
     /* --- লোডার --- */
     #loader {
       position: fixed; inset: 0; background: #111; z-index: 200;
@@ -78,19 +84,15 @@
       filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
       animation: boatRock 3s ease-in-out infinite;
     }
-    /* ✅ স্লোগান আপডেট: দুই লাইনে */
     .mini-slogan-box {
       margin-top: -5px;
       background: #d63031; color: white;
-      font-weight: 900; 
-      font-size: clamp(9px, 2.5vw, 12px); /* ফন্ট সাইজ একটু এডজাস্ট করা হয়েছে */
+      font-weight: 900; font-size: clamp(9px, 2.5vw, 12px);
       padding: 4px 8px; border-radius: 8px;
       border: 1px solid white;
       box-shadow: 0 3px 6px rgba(0,0,0,0.4);
-      text-align: center; 
-      white-space: nowrap; 
-      z-index: 61;
-      line-height: 1.3;
+      text-align: center; white-space: nowrap;
+      z-index: 61; line-height: 1.3;
     }
     @keyframes floatGroup { 0%,100%{transform:translateY(0);} 50%{transform:translateY(5px);} }
     @keyframes boatRock { 0%,100%{transform:rotate(0deg);} 25%{transform:rotate(-3deg);} 75%{transform:rotate(3deg);} }
@@ -193,14 +195,20 @@
     #best-score-display { display: none; color: #2ecc71; font-size: 18px; margin-bottom: 15px; font-weight: bold; }
     #overlay .hint { color: #d1d5db; font-size: 11px; margin-top: 14px; opacity: 0.8; }
     
+    .btn-group { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 250px; }
     button {
-      padding: 12px 35px; font-size: 18px; border: none; border-radius: 50px;
-      background: linear-gradient(45deg, #FF416C, #FF4B2B); color: #fff;
-      font-weight: 900; cursor: pointer; box-shadow: 0 5px 15px rgba(255, 75, 43, 0.5);
+      padding: 12px 30px; font-size: 18px; border: none; border-radius: 50px;
+      color: #fff; font-weight: 900; cursor: pointer;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3); width: 100%;
+    }
+    #startBtn { background: linear-gradient(45deg, #FF416C, #FF4B2B); }
+    /* ✅ শেয়ার বাটন স্টাইল */
+    #shareBtn {
+      background: linear-gradient(45deg, #1877F2, #165EAB);
+      display: none; /* ডিফল্ট হাইড */
     }
     button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    /* --- মোবাইল ফিক্স --- */
     @media (max-height: 650px) {
       #goal-post { top: 15%; font-size: 160px; }
       #keeper-container { top: 34%; width: 85px; }
@@ -212,6 +220,8 @@
 
 <body>
   <div id="loader"><div class="spinner"></div><div id="loading-text">লোড হচ্ছে...</div></div>
+
+  <canvas id="confetti-canvas"></canvas>
 
   <div id="intro-layer">
     <img src="intro.jpg" alt="Notice">
@@ -267,8 +277,12 @@
       <div id="final-score">Score: 0</div>
       <div id="best-score-display">Best: 0</div>
       
-      <button id="startBtn" disabled>ম্যাচ শুরু ▶</button>
-      <div class="hint">বামে বা ডানে ট্যাপ করে শট নিন</div>
+      <div class="btn-group">
+        <button id="startBtn" disabled>ম্যাচ শুরু ▶</button>
+        <button id="shareBtn">Share Score 🚀</button>
+      </div>
+      
+      <div class="hint">সোয়াইপ (Swipe) বা ট্যাপ করে শট নিন</div>
     </div>
   </div>
 
@@ -300,18 +314,65 @@
     const finalScoreEl  = document.getElementById("final-score");
     const bestScoreEl   = document.getElementById("best-score-display");
     const startBtn      = document.getElementById("startBtn");
+    const shareBtn      = document.getElementById("shareBtn");
     const muteBtn       = document.getElementById("muteBtn");
+    const confettiCvs   = document.getElementById("confetti-canvas");
+    const ctx           = confettiCvs.getContext("2d");
 
     const state = { score: 0, lives: 5, isKicking: false, active: false };
-    
     let bestScore = parseInt(localStorage.getItem('vp_best')) || 0;
-    
     let assetsReady = false;
+
+    // --- SWIPE LOGIC ---
+    let touchStartX = 0;
+    
+    // Touch Start
+    gameContainer.addEventListener('touchstart', (e) => {
+        if(!state.active || state.isKicking) return;
+        touchStartX = e.touches[0].clientX;
+    }, {passive: false});
+
+    // Touch End (Detect Swipe or Tap)
+    gameContainer.addEventListener('touchend', (e) => {
+        if(!state.active || state.isKicking) return;
+        if(e.target && e.target.id === "muteBtn") return;
+
+        let touchEndX = e.changedTouches[0].clientX;
+        let diffX = touchEndX - touchStartX;
+
+        // যদি ৩০px এর বেশি মুভ হয় = Swipe
+        if(Math.abs(diffX) > 30) {
+            kickBall(diffX < 0 ? "left" : "right");
+        } else {
+            // নতুবা Tap হিসেবে গণ্য হবে
+            const screenMiddle = window.innerWidth / 2;
+            const aim = touchEndX < screenMiddle ? "left" : "right";
+            kickBall(aim);
+        }
+    }, {passive: false});
+
+    // Mouse Click (Desktop Fallback)
+    gameContainer.addEventListener('mousedown', (e) => {
+        if(!state.active || state.isKicking) return;
+        if(e.target && e.target.id === "muteBtn") return;
+        
+        // মাউস দিয়ে সোয়াইপ এমুলেট না করে সিম্পল ক্লিক রাখা হলো
+        const x = e.clientX;
+        const screenMiddle = window.innerWidth / 2;
+        kickBall(x < screenMiddle ? "left" : "right");
+    });
 
     muteBtn.addEventListener("click", (e) => {
       e.stopPropagation();
       music.muted = !music.muted;
       muteBtn.textContent = music.muted ? "🔇" : "🔊";
+    });
+
+    // ✅ শেয়ার বাটন লজিক
+    shareBtn.addEventListener("click", () => {
+        const text = `আমি Vote Penalty গেমসে ${state.score} গোল দিয়েছি! আপনি পারবেন আমার রেকর্ড ভাঙতে?`;
+        const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}&quote=${encodeURIComponent(text)}`;
+        window.open(url, '_blank');
     });
 
     const assets = [introSrc, keeperDefaultSrc, keeperLaughSrc, keeperCrySrc, salamSrc, noSalamSrc, boxSrc, boatSrc];
@@ -363,6 +424,7 @@
       overlayTitle.textContent = "VOTE KHELA PRO";
       finalScoreEl.style.display = "none";
       bestScoreEl.style.display = "none";
+      shareBtn.style.display = "none";
       overlay.style.display = "none";
 
       state.score = 0;
@@ -373,21 +435,9 @@
 
       music.volume = 0.5;
       music.play().catch(() => {});
-      
-      gameContainer.onpointerdown = handleInput;
       resetRound(true);
     }
     startBtn.onclick = startGame;
-
-    function handleInput(e) {
-      if (!state.active || state.isKicking) return;
-      if (e.target && e.target.id === "muteBtn") return;
-
-      const x = (typeof e.clientX === "number") ? e.clientX : window.innerWidth / 2;
-      const screenMiddle = window.innerWidth / 2;
-      const aim = x < screenMiddle ? "left" : "right";
-      kickBall(aim);
-    }
 
     function kickBall(aim) {
       state.isKicking = true;
@@ -402,20 +452,18 @@
         keeperCont.style.transform = `translateX(calc(-50% + ${moveX}px))`;
 
         ballAnim.style.left = aim === "left" ? "40%" : "60%";
-        
         msg.classList.remove("msg-goal", "msg-miss", "show-msg");
 
         if (isGoal) {
           ballAnim.classList.add("ball-goal");
           msg.textContent = "GOAL!";
           msg.classList.add("msg-goal", "show-msg");
+          fireConfetti(); // ✅ কনফেটি চালু হবে
           
           setTimeout(() => {
             state.score++; updateUI();
-            
             salamImg.src = salamSrc; 
             salamDiv.classList.add("salam-happy");
-            
             keeperImg.src = keeperCrySrc;
             keeperCont.classList.add("keeper-cry");
           }, 450);
@@ -431,7 +479,6 @@
           setTimeout(() => {
             salamDiv.classList.remove("salam-happy");
             salamImg.src = noSalamSrc;
-            
             keeperImg.src = keeperLaughSrc;
             keeperCont.classList.add("keeper-laugh");
           }, 450);
@@ -476,6 +523,7 @@
       
       finalScoreEl.style.display = "block";
       bestScoreEl.style.display = "block";
+      shareBtn.style.display = "block"; // ✅ শেয়ার বাটন দেখাবে
 
       startBtn.textContent = "Play Again 🔄";
       startBtn.onclick = () => {
@@ -484,6 +532,41 @@
       };
       overlay.style.display = "flex";
     }
+
+    // --- Simple Confetti Implementation ---
+    let particles = [];
+    function fireConfetti() {
+        for(let i=0; i<30; i++) {
+            particles.push({
+                x: window.innerWidth / 2,
+                y: window.innerHeight / 2,
+                vx: (Math.random() - 0.5) * 10,
+                vy: (Math.random() - 0.5) * 10,
+                color: `hsl(${Math.random()*360}, 100%, 50%)`,
+                life: 100
+            });
+        }
+    }
+    
+    function loopConfetti() {
+        ctx.clearRect(0,0,confettiCvs.width,confettiCvs.height);
+        confettiCvs.width = window.innerWidth;
+        confettiCvs.height = window.innerHeight;
+        
+        for(let i=0; i<particles.length; i++) {
+            let p = particles[i];
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vy += 0.2; // Gravity
+            p.life--;
+            ctx.fillStyle = p.color;
+            ctx.fillRect(p.x, p.y, 8, 8);
+        }
+        particles = particles.filter(p => p.life > 0);
+        requestAnimationFrame(loopConfetti);
+    }
+    loopConfetti();
+
   </script>
 </body>
 </html>
